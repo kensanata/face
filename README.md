@@ -14,3 +14,7 @@ pixels. I got that by scanning images that were about 3.2 × 4.0 cm.
 
 Take a look at the
 [scanned image](https://www.flickr.com/photos/kensanata/20972514994/in/dateposted/).
+I cleaned that up by changing the scan's image mode from RGB to
+"indexed" and providing my own palette of three colors: white, blue,
+dark blue. I created this palette using the Palette Editor and simply
+sampling two shades of blue from my paper.
