@@ -6,8 +6,10 @@ Currently we're using the following elements:
 
 * eyes
 * nose
-* mouth
-* hair
+* mouth (includes beard, I guess?)
+* hair (includes headwear, I guess?)
+
+We ought to add ears, I guess.
 
 We're using simple string matching, here. So, anything with "eyes" in
 its filename, can be used. The images are more or less 370 × 470
