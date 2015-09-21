@@ -9,7 +9,8 @@ Currently we're using the following elements:
 * mouth (includes beard, I guess?)
 * hair (includes headwear, I guess?)
 
-We ought to add ears, I guess.
+We ought to add ears and chin (and more beard), I guess. I'm not sure
+we need much else?
 
 We're using simple string matching, here. So, anything with "eyes" in
 its filename, can be used. The images are more or less 370 × 470
