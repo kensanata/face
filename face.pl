@@ -15,7 +15,7 @@ get '/' => sub {
 
 get '/random' => sub {
   my $self = shift;
-  my @elements = qw(eyes nose mouth hair);
+  my @elements = qw(eyes nose mouth beard hair);
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   @files = grep { /\.png$/ } readdir($dh);
@@ -24,7 +24,7 @@ get '/random' => sub {
     my $re = qr/$_/;
     one(grep(/$re/, @files));
   } @elements;
-  my $image = GD::Image->new(370, 470);
+  my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
   $image->rectangle(0,0, $image->getBounds(), $white);
   for my $component (@components) {
