@@ -2,7 +2,7 @@
 
 This application goes through the files in the [elements](elements)
 folder and picks out one of each for every element of a face.
-Currently we're the following elements:
+Currently we're using the following elements:
 
 * eyes
 * nose
