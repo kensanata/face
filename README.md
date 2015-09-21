@@ -1,7 +1,8 @@
 # Random Faces
 
 This application goes through the files in the [elements](elements)
-folder and picks out one for element of a face. Currently we're using:
+folder and picks out one of each for every element of a face.
+Currently we're the following elements:
 
 * eyes
 * nose
@@ -11,6 +12,10 @@ folder and picks out one for element of a face. Currently we're using:
 We're using simple string matching, here. So, anything with "eyes" in
 its filename, can be used. The images are more or less 370 × 470
 pixels. I got that by scanning images that were about 3.2 × 4.0 cm.
+
+The images have an alpha channel but I'm not sure how this is supposed
+to work. Right now I'm telling the app to use white as the transparent
+color.
 
 Take a look at the
 [scanned image](https://www.flickr.com/photos/kensanata/20972514994/in/dateposted/).
