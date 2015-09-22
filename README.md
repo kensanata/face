@@ -38,6 +38,8 @@ a row of ears or chins (maybe with beards).
    and the following command line: `convert -blur 0x1 +dither -remap
    tintenblau.png scan1.jpg source1.png` – this forces the image to
    use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
+   We're also moving from JPG (which is what your scanner probably
+   produced) to PNG.
 
 3. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
    the scan into 5 × 5 images of 450 × 600 pixels each and labels them
