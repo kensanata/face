@@ -19,13 +19,6 @@ The images have an alpha channel but I'm not sure how this is supposed
 to work. Right now I'm telling the app to use white as the transparent
 color.
 
-Take a look at the
-[scanned image](https://www.flickr.com/photos/kensanata/20972514994/in/dateposted/).
-I cleaned that up by changing the scan's image mode from RGB to
-"indexed" and providing my own palette of three colors: white, blue,
-dark blue. I created this palette using the Palette Editor and simply
-sampling two shades of blue from my paper.
-
 # Adding Elements
 
 Print out a copy of the [empty PDF](empty.pdf) with those egg-heads.
@@ -36,7 +29,10 @@ a row of ears or chins (maybe with beards).
 1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
    The result should be an image more or less 5 × 450 = 2250 pixels
-   wide and 5 × 600 = 3000 pixels high.
+   wide and 5 × 600 = 3000 pixels high. Examples
+   [by Alex](https://www.flickr.com/photos/kensanata/21419974480/in/dateposted/)
+   and
+   [by Claudia](https://www.flickr.com/photos/kensanata/21419975330/in/photostream/).
 
 2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
