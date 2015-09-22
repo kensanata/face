@@ -38,7 +38,7 @@ sub one {
 }
 
 sub random_components {
-  my @elements = qw(eyes nose ears mouth beard hair);
+  my @elements = qw(eyes nose ears mouth chin hair);
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   @files = grep { /\.png$/ } readdir($dh);
