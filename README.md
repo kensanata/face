@@ -6,11 +6,10 @@ Currently we're using the following elements:
 
 * eyes
 * nose
-* mouth (includes beard, I guess?)
-* hair (includes headwear, I guess?)
-
-We ought to add ears and chin (and more beard), I guess. I'm not sure
-we need much else?
+* ears
+* mouth
+* chin
+* hair
 
 We're using simple string matching, here. So, anything with "eyes" in
 its filename, can be used. The images are more or less 370 × 470
@@ -35,8 +34,24 @@ of mouths (maybe with mustaches), a row of hair (maybe with hats), and
 a row of ears or chins (maybe with beards).
 
 1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
-   or whatever else you feel comfortable with.
+   or whatever else you feel comfortable with. Cropping is important.
+   The result should be an image more or less 5 × 450 = 2250 pixels
+   wide and 5 × 600 = 3000 pixels high.
 
-2. Cut the image into elements using [cutter.pl](cutter.pl).
+2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
+   and the following command line: `convert -blur 0x1 +dither -remap
+   tintenblau.png scan1.jpg source1.png` – this forces the image to
+   use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
 
-3. Clean up the files by using a three color palette [TODO].
+3. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
+   the scan into 5 × 5 images of 450 × 600 pixels each and labels them
+   by row. You'd invoke it as follows: `perl cutter.pl source1.png
+   eyes nose mouth hair chin` or `perl cutter.pl source2.png eyes
+   nose mouth hair ears`.
+
+4. If you think that some of your samples are specific to a particular
+   phenotype, add the type to the filename. If you have a beard, for
+   example, rename it from `chin_1.png` to `chin_male_1.png` or if you
+   have ears that are fit for elves only, rename it from `ears_2.png`
+   to `ears_elf_2.png`.
+   

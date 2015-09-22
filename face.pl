@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
+use Mojo::ByteStream;
 use Mojo::Home;
 use GD;
 
@@ -13,9 +14,31 @@ get '/' => sub {
   $self->render('index');
 } => 'main';
 
+get '/view' => sub {
+  my $self = shift;
+  $self->render(template => 'view',
+		components => join(',', random_components()));
+};
+
 get '/random' => sub {
   my $self = shift;
-  my @elements = qw(eyes nose mouth beard hair);
+  $self->render(data => render_components(random_components()), format => 'png');
+};
+
+get '/face/#files' => sub {
+  my $self = shift;
+  $self->render(data => render_components(split(',', $self->param('files'))));
+} => 'face';
+
+app->start;
+
+sub one {
+  my $i = int(rand(scalar @_));
+  return $_[$i];
+}
+
+sub random_components {
+  my @elements = qw(eyes nose ears mouth beard hair);
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   @files = grep { /\.png$/ } readdir($dh);
@@ -24,10 +47,16 @@ get '/random' => sub {
     my $re = qr/$_/;
     one(grep(/$re/, @files));
   } @elements;
+  return @components;
+}
+
+sub render_components {
+  my @components = @_;
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
   $image->rectangle(0,0, $image->getBounds(), $white);
   for my $component (@components) {
+    next unless $component;
     open(my $fh, '<', "$home/elements/$component")
 	|| die "Can't open $component: $!";
     my $layer = GD::Image->newFromPng($fh);
@@ -35,15 +64,7 @@ get '/random' => sub {
     $layer->transparent($white);
     $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
   }
-  my $bytes = $image->png();
-  $self->render(data => $bytes, format => 'png');
-};
-
-app->start;
-
-sub one {
-  my $i = int(rand(scalar @_));
-  return $_[$i];
+  return $image->png();
 }
 
 __DATA__
@@ -54,9 +75,21 @@ __DATA__
 <h1>Faces for your RPG Characters</h1>
 <p>Here's what the app can do:
 <ul>
-<li><%= link_to 'Random Face' => 'random' %></li>
+<li><%= link_to 'Random Face' => 'view' %></li>
 </ul>
 
+@@ view.html.ep
+% layout 'default';
+% title 'Faces';
+<h1>Random Face</h1>
+<p><%= link_to 'Reload' => 'view' %> the page to get a different face.
+<p>
+<a href="/face/<%= $components %>" download>
+<img class="face" src="/face/<%= $components %>">
+</a>
+<p>
+For demonstration purposes, you can also use this link to a
+<%= link_to random => begin %>random face<% end %>.
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
@@ -68,6 +101,9 @@ __DATA__
 body {
   padding: 1em;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+.face {
+  height: 300px;
 }
 #logo {
   position: absolute;
