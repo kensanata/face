@@ -54,4 +54,13 @@ a row of ears or chins (maybe with beards).
    example, rename it from `chin_1.png` to `chin_male_1.png` or if you
    have ears that are fit for elves only, rename it from `ears_2.png`
    to `ears_elf_2.png`.
-   
+
+# Dependencies
+
+The CGI script depends on [Mojolicious](http://mojolicio.us/) (perhaps
+this is too old: `sudo apt-get install libmojolicious-perl` – I used
+`cpan Mojolicious` instead). Cutter depends on
+[GD](https://metacpan.org/pod/GD) (`sudo apt-get install
+libgd-gd2-perl`). The clean up instructions depend on
+[ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
+imagemagick`).
