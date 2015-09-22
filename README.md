@@ -1,8 +1,7 @@
 # Random Faces
 
 This application goes through the files in the [elements](elements)
-folder and picks out one of each for every element of a face.
-Currently we're using the following elements:
+folder and picks out one of each for every *element* of a face:
 
 * eyes
 * nose
@@ -11,13 +10,32 @@ Currently we're using the following elements:
 * chin
 * hair
 
-We're using simple string matching, here. So, anything with "eyes" in
-its filename, can be used. The images are more or less 370 × 470
-pixels. I got that by scanning images that were about 3.2 × 4.0 cm.
+We also want to allow filtering by *type*.
 
-The images have an alpha channel but I'm not sure how this is supposed
-to work. Right now I'm telling the app to use white as the transparent
-color.
+* woman
+* man
+* elf
+* dwarf
+
+We're depending on a simple file name format:
+`element_type_stuff.png`, such as `ears_elf_2.png`.
+
+If we're requesting an element of a particular type and no such
+element exists, we'll take any element with type "all". Thus, if we're
+going to request elf ears, we'll get `ears_elf_2.png`. If we request
+dwarf ears and there are no special dwarf ears, we might get
+`ears_all_1.png`, for example.
+
+If we're don't determine a type, this is equivalent to asking for the
+"all" type. We might get `ears_all_1.png` but we won't get
+`ears_elf_2.png`.
+
+This results in a problem when adding a type when there was none. At
+first, we just had `hair_all_*.png`. Then we decided that here was a
+hairdo for a woman and created `hair_woman_3.png`. From now on, the
+"all" type will no longer be considered for women. You could use a
+symbolic link called `hair_woman_1.png` for `hair_all_1.png` or you
+could rename `hair_all_1.png` to hair_all_woman_1.png`.
 
 # Adding Elements
 
@@ -39,7 +57,8 @@ a row of ears or chins (maybe with beards).
    tintenblau.png scan1.jpg source1.png` – this forces the image to
    use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
    We're also moving from JPG (which is what your scanner probably
-   produced) to PNG.
+   produced) to PNG. Don't worry about transparency: *white* is
+   considered to be *transparent* when merging the various elements.
 
 3. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
    the scan into 5 × 5 images of 450 × 600 pixels each and labels them

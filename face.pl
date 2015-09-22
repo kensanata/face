@@ -23,12 +23,12 @@ get '/view' => sub {
 get '/random' => sub {
   my $self = shift;
   $self->render(data => render_components(random_components()), format => 'png');
-};
+} => 'random';
 
 get '/random/:type' => sub {
   my $self = shift;
   $self->render(data => render_components(random_components($self->param('type'))), format => 'png');
-};
+} => 'randomtype';
 
 get '/face/#files' => sub {
   my $self = shift;
@@ -100,7 +100,10 @@ __DATA__
 </a>
 <p>
 For demonstration purposes, you can also use this link to a
-<%= link_to random => begin %>random face<% end %>.
+<%= link_to random => begin %>random face<% end %>,
+<%= link_to url_for(randomtype => {type => 'man'})   => begin %>random man<% end %>,
+<%= link_to url_for(randomtype => {type => 'woman'}) => begin %>random woman<% end %>,
+<%= link_to url_for(randomtype => {type => 'elf'})   => begin %>random elf<% end %>.
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
