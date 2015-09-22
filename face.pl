@@ -25,6 +25,11 @@ get '/random' => sub {
   $self->render(data => render_components(random_components()), format => 'png');
 };
 
+get '/random/:type' => sub {
+  my $self = shift;
+  $self->render(data => render_components(random_components($self->param('type'))), format => 'png');
+};
+
 get '/face/#files' => sub {
   my $self = shift;
   $self->render(data => render_components(split(',', $self->param('files'))));
@@ -38,14 +43,18 @@ sub one {
 }
 
 sub random_components {
+  my $type = shift||'all';
   my @elements = qw(eyes nose ears mouth chin hair);
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map {
-    my $re = qr/$_/;
-    one(grep(/$re/, @files));
+    my $element = $_; # inside grep $_ points to a file
+    my @candidates1 = grep(/^${element}_/, @files);
+    my @candidates2 = grep(/_${type}/, @candidates1) if $type;
+    @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
+    one(@candidates2);
   } @elements;
   return @components;
 }
