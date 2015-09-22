@@ -84,8 +84,10 @@ __DATA__
 <h1>Random Face</h1>
 <p><%= link_to 'Reload' => 'view' %> the page to get a different face.
 <p>
-<a href="/face/<%= $components %>" download>
-<img class="face" src="/face/<%= $components %>">
+<% my $components = $self->stash('components');
+   my $url = $self->url_for(face => { files => $components }); %>
+<a href="<%= $url %>" download="random.png">
+<img class="face" src="<%= $url %>">
 </a>
 <p>
 For demonstration purposes, you can also use this link to a
