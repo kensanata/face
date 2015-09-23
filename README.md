@@ -47,7 +47,8 @@ a row of ears or chins (maybe with beards).
 1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
    The result should be an image more or less 5 × 450 = 2250 pixels
-   wide and 5 × 600 = 3000 pixels high. Examples
+   wide and 5 × 600 = 3000 pixels high. Rescale the image if
+   necessary. Examples
    [by Alex](https://www.flickr.com/photos/kensanata/21419974480/in/dateposted/)
    and
    [by Claudia](https://www.flickr.com/photos/kensanata/21419975330/in/photostream/).
