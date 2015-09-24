@@ -40,12 +40,21 @@ could rename `hair_all_1.png` to hair_all_woman_1.png`.
 
 # Adding Elements
 
-Print out a copy of the [empty PDF](empty.pdf) with those egg-heads.
-Use a blue fountain pen to draw a row of eyes, a row of noses, a row
-of mouths (maybe with mustaches), a row of hair (maybe with hats), and
-a row of ears or chins (maybe with beards).
+Check out [How to Draw a Face](http://www.wikihow.com/Draw-a-Face) or
+a similar resource.
 
-1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
+1. Print out a copy of the [empty PDF](empty.pdf) with those
+   egg-heads. Do not scale to fit! Use a scale of 100%. This PDF has
+   some helping guidelines to make sure all the elements are more or
+   less in the right place. The smaller horizontal lines are for the
+   tip of the nose and the bottom of the mouth. See the
+   [example](example.png).
+
+2. Use a blue fountain pen to draw a row of eyes, a row of noses, a
+   row of mouths (maybe with mustaches), a row of hair (maybe with
+   hats), and a row of ears or chins (maybe with beards).
+
+3. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
    The result should be an image more or less 5 × 450 = 2250 pixels
    wide and 5 × 600 = 3000 pixels high. Rescale the image if
@@ -54,7 +63,7 @@ a row of ears or chins (maybe with beards).
    and
    [by Claudia](https://www.flickr.com/photos/kensanata/21419975330/in/photostream/).
 
-2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
+4. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
    tintenblau.png scan1.jpg source1.png` – this forces the image to
    use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
@@ -62,7 +71,7 @@ a row of ears or chins (maybe with beards).
    produced) to PNG. Don't worry about transparency: *white* is
    considered to be *transparent* when merging the various elements.
 
-3. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
+5. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
    the scan into 5 × 5 images of 450 × 600 pixels each and labels them
    by row. You'd invoke it as follows: `perl cutter.pl source1.png
    eyes nose mouth hair chin` or `perl cutter.pl source2.png eyes nose
@@ -70,7 +79,7 @@ a row of ears or chins (maybe with beards).
    don't need to repeat it. Thus, if you've drawn a sheet full of
    eyes, just use `perl cutter.pl source4.png eyes` and you're good.
 
-4. If you think that some of your samples are specific to a particular
+6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
    example, rename it from `chin_1.png` to `chin_male_1.png` or if you
    have ears that are fit for elves only, rename it from `ears_2.png`

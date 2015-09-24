@@ -1,69 +1,57 @@
 <svg version="1.1"
-     baseProfile="full"
      width="11in" height="8.5in"
-     xmlns="http://www.w3.org/2000/svg">
+     viewBox="0 0 11 8.5"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
 
   <style>
-    rect, ellipse { fill: none; stroke: #ddd }
+    line, rect, circle, ellipse, path {
+    fill: white; stroke: #ddd; stroke-width: 0.02;
+    }
   </style>
-  
-  <rect x="0.5in" y="0.5in" width="2in" height="1.5in"/>
-  <rect x="2.5in" y="0.5in" width="2in" height="1.5in"/>
-  <rect x="4.5in" y="0.5in" width="2in" height="1.5in"/>
-  <rect x="6.5in" y="0.5in" width="2in" height="1.5in"/>
-  <rect x="8.5in" y="0.5in" width="2in" height="1.5in"/>
 
-  <rect x="0.5in" y="2.0in" width="2in" height="1.5in"/>
-  <rect x="2.5in" y="2.0in" width="2in" height="1.5in"/>
-  <rect x="4.5in" y="2.0in" width="2in" height="1.5in"/>
-  <rect x="6.5in" y="2.0in" width="2in" height="1.5in"/>
-  <rect x="8.5in" y="2.0in" width="2in" height="1.5in"/>
+  <defs>
+    <g id="face">
+      <rect width="2" height="1.5" fill="none"/>
+      <ellipse cx="1" cy="0.75" rx="0.55" ry="0.4"/>
+      <line x1="0.25"   x2="1.75"   y1="0.75"  y2="0.75"/>
+      <line x1="1"      x2="1"      y1="0.25"  y2="1.25"/>
+      <line x1="1.275"  x2="1.275"  y1="0.7"   y2="0.8"/>
+      <line x1="1.4125" x2="1.4125" y1="0.6"   y2="0.9"/>
+      <circle cx="1" cy="0.97" r="0.12"/>
+      <circle cx="1" cy="0.53" r="0.12"/>
+      <path d="M1,1.08 A0.3,0.2 0 0,1 1,0.85 A0.3,0.2 0 0,1 1,1.08 Z"/>
+      <path d="M1,0.64 A0.3,0.2 0 0,1 1,0.41 A0.3,0.2 0 0,1 1,0.64 Z"/>
+    </g>
+  </defs>
 
-  <rect x="0.5in" y="3.5in" width="2in" height="1.5in"/>
-  <rect x="2.5in" y="3.5in" width="2in" height="1.5in"/>
-  <rect x="4.5in" y="3.5in" width="2in" height="1.5in"/>
-  <rect x="6.5in" y="3.5in" width="2in" height="1.5in"/>
-  <rect x="8.5in" y="3.5in" width="2in" height="1.5in"/>
+  <use xlink:href="#face" x="0.5" y="0.5" />
+  <use xlink:href="#face" x="2.5" y="0.5"/>
+  <use xlink:href="#face" x="4.5" y="0.5"/>
+  <use xlink:href="#face" x="6.5" y="0.5"/>
+  <use xlink:href="#face" x="8.5" y="0.5"/>
 
-  <rect x="0.5in" y="5.0in" width="2in" height="1.5in"/>
-  <rect x="2.5in" y="5.0in" width="2in" height="1.5in"/>
-  <rect x="4.5in" y="5.0in" width="2in" height="1.5in"/>
-  <rect x="6.5in" y="5.0in" width="2in" height="1.5in"/>
-  <rect x="8.5in" y="5.0in" width="2in" height="1.5in"/>
+  <use xlink:href="#face" x="0.5" y="2.0"/>
+  <use xlink:href="#face" x="2.5" y="2.0"/>
+  <use xlink:href="#face" x="4.5" y="2.0"/>
+  <use xlink:href="#face" x="6.5" y="2.0"/>
+  <use xlink:href="#face" x="8.5" y="2.0"/>
 
-  <rect x="0.5in" y="6.5in" width="2in" height="1.5in"/>
-  <rect x="2.5in" y="6.5in" width="2in" height="1.5in"/>
-  <rect x="4.5in" y="6.5in" width="2in" height="1.5in"/>
-  <rect x="6.5in" y="6.5in" width="2in" height="1.5in"/>
-  <rect x="8.5in" y="6.5in" width="2in" height="1.5in"/>
+  <use xlink:href="#face" x="0.5" y="3.5"/>
+  <use xlink:href="#face" x="2.5" y="3.5"/>
+  <use xlink:href="#face" x="4.5" y="3.5"/>
+  <use xlink:href="#face" x="6.5" y="3.5"/>
+  <use xlink:href="#face" x="8.5" y="3.5"/>
 
-  <ellipse cx="1.5in" cy="1.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="3.5in" cy="1.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="5.5in" cy="1.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="7.5in" cy="1.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="9.5in" cy="1.25in" rx="0.55in" ry="0.4in"/>
+  <use xlink:href="#face" x="0.5" y="5.0"/>
+  <use xlink:href="#face" x="2.5" y="5.0"/>
+  <use xlink:href="#face" x="4.5" y="5.0"/>
+  <use xlink:href="#face" x="6.5" y="5.0"/>
+  <use xlink:href="#face" x="8.5" y="5.0"/>
 
-  <ellipse cx="1.5in" cy="2.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="3.5in" cy="2.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="5.5in" cy="2.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="7.5in" cy="2.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="9.5in" cy="2.75in" rx="0.55in" ry="0.4in"/>
-
-  <ellipse cx="1.5in" cy="4.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="3.5in" cy="4.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="5.5in" cy="4.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="7.5in" cy="4.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="9.5in" cy="4.25in" rx="0.55in" ry="0.4in"/>
-
-  <ellipse cx="1.5in" cy="5.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="3.5in" cy="5.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="5.5in" cy="5.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="7.5in" cy="5.75in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="9.5in" cy="5.75in" rx="0.55in" ry="0.4in"/>
-
-  <ellipse cx="1.5in" cy="7.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="3.5in" cy="7.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="5.5in" cy="7.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="7.5in" cy="7.25in" rx="0.55in" ry="0.4in"/>
-  <ellipse cx="9.5in" cy="7.25in" rx="0.55in" ry="0.4in"/>
+  <use xlink:href="#face" x="0.5" y="6.5"/>
+  <use xlink:href="#face" x="2.5" y="6.5"/>
+  <use xlink:href="#face" x="4.5" y="6.5"/>
+  <use xlink:href="#face" x="6.5" y="6.5"/>
+  <use xlink:href="#face" x="8.5" y="6.5"/>
 </svg>
