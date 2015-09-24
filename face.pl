@@ -27,6 +27,14 @@ get '/view/:type' => sub {
 		components => join(',', random_components($type)));
 } => 'viewtype';
 
+get '/gallery/:type' => sub {
+  my $self = shift;
+  my $type = $self->param('type');
+  $self->render(template => 'gallery',
+		type => $type,
+		components => join(';', map { join(',', random_components($type)) } 1..10));
+} => 'gallerytype';
+
 get '/random' => sub {
   my $self = shift;
   $self->render(data => render_components(random_components()), format => 'png');
@@ -97,9 +105,10 @@ __DATA__
 
 @@ view.html.ep
 % layout 'default';
-% title 'Faces';
+% title 'Random Face';
 <h1>Random Face (<%= $type %>)</h1>
 <p><%= link_to url_for(viewtype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
+Or take a look at the <%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Gallery<% end %>.
 <p>
 <% my $components = $self->stash('components');
    my $url = $self->url_for(face => { files => $components }); %>
@@ -116,6 +125,20 @@ Or switch type:
 <p>
 For demonstration purposes, you can also use this link to a
 <%= link_to url_for(randomtype => {type => "$type"}) => begin %>random face<% end %>.
+
+@@ gallery.html.ep
+% layout 'default';
+% title 'Face Gallery';
+<h1>Face Gallery (<%= $type %>)</h1>
+<p><%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
+<p>
+<% for my $components (split(/;/, $self->stash('components'))) {
+   warn $components;
+   my $url = $self->url_for(face => { files => $components }); %>
+<a href="<%= $url %>" download="random.png">
+<img class="face" src="<%= $url %>">
+</a>
+<% } %>
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
