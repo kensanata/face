@@ -19,7 +19,7 @@ use Mojo::ByteStream;
 use Mojo::Home;
 use GD;
 
-app->config(hypnotoad => {listen => ['http://*:8082']});
+app->config(hypnotoad => {listen => ['http://*:8082'],});
 
 # Directories to look for dictionaries.
 # Earlier directories have precedence.
@@ -152,7 +152,7 @@ For demonstration purposes, you can also use this link to a
 <% for my $components (split(/;/, $self->stash('components'))) {
    warn $components;
    my $url = $self->url_for(face => { files => $components }); %>
-<a href="<%= $url %>" download="random.png">
+<a href="<%= $url %>" class="download" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
 <% } %>
@@ -162,20 +162,12 @@ For demonstration purposes, you can also use this link to a
 <html>
 <head>
 <title><%= title %></title>
-%= stylesheet '/korero.css'
+%= stylesheet '/face.css'
 %= stylesheet begin
-body {
-  padding: 1em;
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-}
-.face {
-  height: 300px;
-}
-#logo {
-  position: absolute;
-  top: 0;
-  right: 2em;
-}
+body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
+.download { text-decoration: none }
+.face { height: 300px; }
+#logo { position: absolute; top: 0; right: 2em; }
 % end
 <meta name="viewport" content="width=device-width">
 </head>
