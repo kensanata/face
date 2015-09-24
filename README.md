@@ -64,8 +64,10 @@ a row of ears or chins (maybe with beards).
 3. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
    the scan into 5 × 5 images of 450 × 600 pixels each and labels them
    by row. You'd invoke it as follows: `perl cutter.pl source1.png
-   eyes nose mouth hair chin` or `perl cutter.pl source2.png eyes
-   nose mouth hair ears`.
+   eyes nose mouth hair chin` or `perl cutter.pl source2.png eyes nose
+   mouth hair ears`. If the remaining rows are all the same type, you
+   don't need to repeat it. Thus, if you've drawn a sheet full of
+   eyes, just use `perl cutter.pl source4.png eyes` and you're good.
 
 4. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
