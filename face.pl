@@ -16,9 +16,16 @@ get '/' => sub {
 
 get '/view' => sub {
   my $self = shift;
+  $self->redirect_to(viewtype => {type => 'all'});
+} => 'view';
+
+get '/view/:type' => sub {
+  my $self = shift;
+  my $type = $self->param('type');
   $self->render(template => 'view',
-		components => join(',', random_components()));
-};
+		type => $type,
+		components => join(',', random_components($type)));
+} => 'viewtype';
 
 get '/random' => sub {
   my $self = shift;
@@ -45,6 +52,7 @@ sub one {
 sub random_components {
   my $type = shift||'all';
   my @elements = qw(eyes nose ears mouth chin hair);
+  push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   @files = grep { /\.png$/ } readdir($dh);
@@ -90,8 +98,8 @@ __DATA__
 @@ view.html.ep
 % layout 'default';
 % title 'Faces';
-<h1>Random Face</h1>
-<p><%= link_to 'Reload' => 'view' %> the page to get a different face.
+<h1>Random Face (<%= $type %>)</h1>
+<p><%= link_to url_for(viewtype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
 <p>
 <% my $components = $self->stash('components');
    my $url = $self->url_for(face => { files => $components }); %>
@@ -99,11 +107,15 @@ __DATA__
 <img class="face" src="<%= $url %>">
 </a>
 <p>
+Or switch type:
+<% for my $t (qw(all man woman elf)) {
+     next if $type eq $t;
+     $self->stash('t', $t); %>
+<%= link_to url_for(viewtype => {type => "$t"})   => begin %><%= $t %><% end %>
+<% } %>
+<p>
 For demonstration purposes, you can also use this link to a
-<%= link_to random => begin %>random face<% end %>,
-<%= link_to url_for(randomtype => {type => 'man'})   => begin %>random man<% end %>,
-<%= link_to url_for(randomtype => {type => 'woman'}) => begin %>random woman<% end %>,
-<%= link_to url_for(randomtype => {type => 'elf'})   => begin %>random elf<% end %>.
+<%= link_to url_for(randomtype => {type => "$type"}) => begin %>random face<% end %>.
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>

@@ -9,6 +9,7 @@ folder and picks out one of each for every *element* of a face:
 * mouth
 * chin
 * hair
+* extra (only 10% of all faces)
 
 We also want to allow filtering by *type*.
 
