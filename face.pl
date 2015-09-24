@@ -19,6 +19,8 @@ use Mojo::ByteStream;
 use Mojo::Home;
 use GD;
 
+app->config(hypnotoad => {listen => ['http://*:8082']});
+
 # Directories to look for dictionaries.
 # Earlier directories have precedence.
 my $home = Mojo::Home->new;
