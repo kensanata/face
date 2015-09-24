@@ -64,7 +64,7 @@ get '/random/:type' => sub {
 
 get '/face/#files' => sub {
   my $self = shift;
-  $self->render(data => render_components(split(',', $self->param('files'))));
+  $self->render(data => render_components(split(',', $self->param('files'))), format => 'png');
 } => 'face';
 
 app->start;
