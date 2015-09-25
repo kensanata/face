@@ -76,7 +76,11 @@ sub one {
 
 sub random_components {
   my $type = shift||'all';
-  my @elements = qw(eyes nose ears mouth chin hair);
+  # chin after mouth (mustache hides mouth)
+  # nose after chin (mustache!)
+  # hair after ears
+  # ears after chin
+  my @elements = qw(eyes mouth chin ears nose hair);
   push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
   my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";

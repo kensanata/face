@@ -71,13 +71,14 @@ a similar resource.
    produced) to PNG. Don't worry about transparency: *white* is
    considered to be *transparent* when merging the various elements.
 
-5. Cut the image into elements using [cutter.pl](cutter.pl). It cuts
-   the scan into 5 × 5 images of 450 × 600 pixels each and labels them
-   by row. You'd invoke it as follows: `perl cutter.pl source1.png
-   eyes nose mouth hair chin` or `perl cutter.pl source2.png eyes nose
-   mouth hair ears`. If the remaining rows are all the same type, you
-   don't need to repeat it. Thus, if you've drawn a sheet full of
-   eyes, just use `perl cutter.pl source4.png eyes` and you're good.
+5. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
+   It cuts the scan into 5 × 5 images of 450 × 600 pixels each and
+   labels them by row. You'd invoke it as follows: `perl
+   helpers/cutter.pl source1.png eyes nose mouth hair chin` or `perl
+   helpers/cutter.pl source2.png eyes nose mouth hair ears`. If the
+   remaining rows are all the same type, you don't need to repeat it.
+   Thus, if you've drawn a sheet full of eyes, just use `perl
+   cutter.pl source4.png eyes` and you're good.
 
 6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
@@ -106,4 +107,15 @@ pixels:
 for n in `seq 34`; do
   convert -page +0+35 -background white -flatten elements/eyes_all_$n.png eyes_all_$n.png
 done
+```
+
+If you need help figuring out by how much you might want to shift
+images, you can use [top.pl](helpers/top.pl) and
+[bottom.pl](helpers/bottom.pl). They cound how many white lines there
+are at the top and at the bottom, respectively.
+
+Example usage:
+
+```
+perl helpers/top.pl elements/eyes_all_*
 ```
