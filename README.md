@@ -94,3 +94,16 @@ this is too old: `sudo apt-get install libmojolicious-perl` – I used
 libgd-gd2-perl`). The clean up instructions depend on
 [ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
 imagemagick`).
+
+# Moving stuff around
+
+If it turns out that you scanned a bunch of elements and they're all
+shifted by some amount, you can use the command line to make your life
+easier. Here is what I used to shift some old eye elements down by 35
+pixels:
+
+```
+for n in `seq 34`; do
+  convert -page +0+35 -background white -flatten elements/eyes_all_$n.png eyes_all_$n.png
+done
+```
