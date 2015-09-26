@@ -127,7 +127,17 @@ This runs the script as a server on
 hypnotoad face.pl
 ```
 
-# Finding and fixing misaligned elements
+# Finding and fixing misaligned elements: the easy way
+
+If the app is started in *development* mode (such as when you use
+`morbo` to start it), then the main menu will have a new item: **Face
+Debugging**. Follow the link, pick an element type, view the gallery,
+pick an element that is misaligned and klick it. You're now on the
+Element Edit page. Click on the upper half of the image to move the
+element up by ten pixels, click on the lower half of the image to move
+the element down by ten pixels.
+
+# Finding and fixing misaligned elements: the hard way
 
 I start the script using morbo and visit the gallery URLs with the
 debug parameter set to 1:
