@@ -48,13 +48,13 @@ get '/view/:artist/:type' => sub {
 
 get '/gallery' => sub {
   my $self = shift;
-  $self->redirect_to(gallerytype => {artist => 'alex', type => 'man'});
+  $self->redirect_to(gallery => {artist => 'alex', type => 'man'});
 };
 
 get '/gallery/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
-  $self->redirect_to(gallerytype => {artist => 'alex', type => $type});
+  $self->redirect_to(gallery => {artist => 'alex', type => $type});
 };
 
 get '/gallery/:artist/:type' => sub {
@@ -70,7 +70,7 @@ get '/gallery/:artist/:type' => sub {
 
 get '/random' => sub {
   my $self = shift;
-  $self->redirect_to(random => {artist => 'alex'});
+  $self->redirect_to(random => {artist => 'alex', type => 'woman'});
 };
 
 get '/random/:type' => sub {
@@ -85,6 +85,7 @@ get '/random/:artist/:type' => sub {
   my $type = $self->param('type');
   $self->render(format => 'png',
 		data => render_components(
+		  $artist,
 		  random_components(
 		    $type, $artist)));
 } => 'random';

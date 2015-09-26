@@ -61,6 +61,26 @@ $t->get_ok('/view')
     ->status_is(302)
     ->header_is(Location => '/view/alex/all');
 
+$t->get_ok('/gallery')
+    ->status_is(302)
+    ->header_is(Location => '/gallery/alex/man');
+
+$t->get_ok('/gallery/man')
+    ->status_is(302)
+    ->header_is(Location => '/gallery/alex/man');
+
+$t->get_ok('/random')
+    ->status_is(302)
+    ->header_is(Location => '/random/alex/woman');
+
+$t->get_ok('/random/woman')
+    ->status_is(302)
+    ->header_is(Location => '/random/alex/woman');
+
+$t->get_ok('/random/alex/woman')
+    ->status_is(200)
+    ->header_is('Content-Type' => 'image/png');
+
  ARTIST:
     for my $artist (qw(alex)) {
       for my $type (qw(all man woman elf)) {
