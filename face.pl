@@ -79,32 +79,32 @@ get '/face/#files' => sub {
 get '/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
-		types => join(',', all_types()));
+		elements => join(',', all_elements()));
 } => 'debug';
 
-get '/debug/:type' => sub {
-  my $self = shift;
-  my $type = $self->param('type');
-  $self->render(template => 'debugtype',
-		type => $type,
-		components => join(';', all_components($type)));
-} => 'debugtype';
-
-get '/edit/#element' => sub {
+get '/debug/:element' => sub {
   my $self = shift;
   my $element = $self->param('element');
+  $self->render(template => 'debugelement',
+		element => $element,
+		components => join(';', all_components($element)));
+} => 'debugelement';
+
+get '/edit/#component' => sub {
+  my $self = shift;
+  my $component = $self->param('component');
   $self->render(template => 'edit',
-		components => "empty_all.png,$element");
+		components => "empty_all.png,$component");
 } => 'edit';
 
-get '/move/#element/:dir' => sub {
+get '/move/#component/:dir' => sub {
   my $self = shift;
   die unless $self->app->mode eq 'development';
-  my $element = $self->param('element');
+  my $component = $self->param('component');
   my $dir = $self->param('dir');
-  move($element, $dir);
+  move($component, $dir);
   $self->render(template => 'edit',
-		components => "empty_all.png,$element");
+		components => "empty_all.png,$component");
 } => 'move';
 
 app->start;
@@ -115,15 +115,15 @@ sub one {
 }
 
 sub all_components {
-  my $type = shift;
+  my $element = shift;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
-  my @files = grep { /$type.*\.png$/ } readdir($dh);
+  my @files = grep { /$element.*\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map { "empty_all.png,$_" } @files;
   return @components;
 }
 
-sub all_types {
+sub all_elements {
   return qw(eyes mouth chin ears nose hair);
 }
 
@@ -134,19 +134,19 @@ sub random_components {
   # nose after chin (mustache!)
   # hair after ears
   # ears after chin
-  my @types = all_types();
-  unshift(@types, 'empty') if $debug;
-  push(@types, 'extra') if rand(1) < 0.1; # 10% chance
+  my @elements = all_elements();
+  unshift(@elements, 'empty') if $debug;
+  push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map {
-    my $type = $_; # inside grep $_ points to a file
-    my @candidates1 = grep(/^${type}_/, @files);
+    my $element = $_; # inside grep $_ points to a file
+    my @candidates1 = grep(/^${element}_/, @files);
     my @candidates2 = grep(/_${type}/, @candidates1) if $type;
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     one(@candidates2);
-  } @types;
+  } @elements;
   return @components;
 }
 
@@ -238,23 +238,23 @@ For demonstration purposes, you can also use this link to a
 % title 'Face Debugging';
 <h1>Face Debugging</h1>
 <p>
-Pick an element type:
+Pick an element:
 <ul>
-<% for my $type (split(/,/, $self->stash('types'))) {
-   my $url  = $self->url_for(debugtype => { type => $type }); %>
-<li><a href="<%= $url %>"><%= $type %></a></li>
+<% for my $element (split(/,/, $self->stash('elements'))) {
+   my $url  = $self->url_for(debugelement => { element => $element }); %>
+<li><a href="<%= $url %>"><%= $element %></a></li>
 <% } %>
 </ul>
 
-@@ debugtype.html.ep
+@@ debugelement.html.ep
 % layout 'default';
 % title 'Face Debugging';
-<h1>Face Debugging (<%= $type %>)</h1>
+<h1>Face Debugging (<%= $element %>)</h1>
 <p>
 <% for my $components (split(/;/, $self->stash('components'))) {
-   my @elements = split(/,/, $components);
+   my @components = split(/,/, $components);
    my $url  = $self->url_for(face => { files => $components });
-   my $edit = $self->url_for(edit => { element => $elements[$#elements] }); %>
+   my $edit = $self->url_for(edit => { component => $components[$#components] }); %>
 <a href="<%= $edit %>" class="edit">
 <img class="face" src="<%= $url %>">
 </a>
@@ -267,10 +267,10 @@ Pick an element type:
 <p>
 <% my $i = 0;
    my $components = $self->stash('components');
-   my @elements = split(/,/, $components);
+   my @components = split(/,/, $components);
    my $url  = $self->url_for(face => { files => $components });
-   my $up   = $self->url_for(move => { element => $elements[$#elements], dir => 'up'});
-   my $down = $self->url_for(move => { element => $elements[$#elements], dir => 'down'});
+   my $up   = $self->url_for(move => { component => $components[$#components], dir => 'up'});
+   my $down = $self->url_for(move => { component => $components[$#components], dir => 'down'});
    $i++; %>
 <img class="debug face" usemap="#map" src="<%= $url %>">
 <map name="map">

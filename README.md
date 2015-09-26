@@ -19,7 +19,8 @@ We also want to allow filtering by *type*.
 * dwarf
 
 We're depending on a simple file name format:
-`element_type_stuff.png`, such as `ears_elf_2.png`.
+`element_type_stuff.png`, such as `ears_elf_2.png`. Each of these is a
+*component* of a particular face.
 
 If we're requesting an element of a particular type and no such
 element exists, we'll take any element with type "all". Thus, if we're
