@@ -76,13 +76,19 @@ get '/face/#files' => sub {
 		  split(',', $self->param('files'))));
 } => 'face';
 
+get '/debug' => sub {
+  my $self = shift;
+  $self->render(template => 'debug',
+		types => join(',', all_types()));
+} => 'debug';
+
 get '/debug/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
-  $self->render(template => 'debug',
+  $self->render(template => 'debugtype',
 		type => $type,
 		components => join(';', all_components($type)));
-} => 'debug';
+} => 'debugtype';
 
 get '/edit/#element' => sub {
   my $self = shift;
@@ -117,6 +123,10 @@ sub all_components {
   return @components;
 }
 
+sub all_types {
+  return qw(eyes mouth chin ears nose hair);
+}
+
 sub random_components {
   my ($type, $debug) = @_;
   $type ||= 'all';
@@ -124,19 +134,19 @@ sub random_components {
   # nose after chin (mustache!)
   # hair after ears
   # ears after chin
-  my @elements = qw(eyes mouth chin ears nose hair);
-  unshift(@elements, 'empty') if $debug;
-  push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
+  my @types = all_types();
+  unshift(@types, 'empty') if $debug;
+  push(@types, 'extra') if rand(1) < 0.1; # 10% chance
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map {
-    my $element = $_; # inside grep $_ points to a file
-    my @candidates1 = grep(/^${element}_/, @files);
+    my $type = $_; # inside grep $_ points to a file
+    my @candidates1 = grep(/^${type}_/, @files);
     my @candidates2 = grep(/_${type}/, @candidates1) if $type;
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     one(@candidates2);
-  } @elements;
+  } @types;
   return @components;
 }
 
@@ -183,6 +193,9 @@ __DATA__
 <p>Here's what the app can do:
 <ul>
 <li><%= link_to 'Random Face' => 'view' %></li>
+<% if ($self->app->mode eq 'development') { %>
+<li><%= link_to 'Face Debugging' => 'debug' %></li>
+<% } %>
 </ul>
 
 @@ view.html.ep
@@ -221,6 +234,19 @@ For demonstration purposes, you can also use this link to a
 <% } %>
 
 @@ debug.html.ep
+% layout 'default';
+% title 'Face Debugging';
+<h1>Face Debugging</h1>
+<p>
+Pick an element type:
+<ul>
+<% for my $type (split(/,/, $self->stash('types'))) {
+   my $url  = $self->url_for(debugtype => { type => $type }); %>
+<li><a href="<%= $url %>"><%= $type %></a></li>
+<% } %>
+</ul>
+
+@@ debugtype.html.ep
 % layout 'default';
 % title 'Face Debugging';
 <h1>Face Debugging (<%= $type %>)</h1>
