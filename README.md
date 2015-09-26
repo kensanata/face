@@ -122,7 +122,7 @@ morbo face.pl
 ```
 
 This runs the script as a server on
-[localhost:8080](http://localhost:8080/), writing a pid file:
+[localhost:8082](http://localhost:8082/), writing a pid file:
 
 ```
 hypnotoad face.pl
