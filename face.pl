@@ -107,6 +107,8 @@ get '/move/#component/:dir' => sub {
 		components => "empty_all.png,$component");
 } => 'move';
 
+app->mode('production') if $ENV{GATEWAY_INTERFACE};
+
 app->start;
 
 sub one {
