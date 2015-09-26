@@ -60,9 +60,7 @@ a similar resource.
    The result should be an image more or less 5 × 450 = 2250 pixels
    wide and 5 × 600 = 3000 pixels high. Rescale the image if
    necessary. Examples
-   [by Alex](https://www.flickr.com/photos/kensanata/21419974480/in/dateposted/)
-   and
-   [by Claudia](https://www.flickr.com/photos/kensanata/21419975330/in/photostream/).
+   [on Flickr](https://www.flickr.com/search/?user_id=80148151%40N00&sort=date-taken-desc&advanced=1&tags=rpg%20face%20generator&view_all=1).
 
 4. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
