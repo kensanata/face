@@ -28,81 +28,121 @@ $home->detect;
 
 get '/' => sub {
   my $self = shift;
-  $self->render('index');
+  $self->render(template => 'index',
+		artists => all_artists());
 } => 'main';
 
 get '/view' => sub {
   my $self = shift;
-  $self->redirect_to(viewtype => {type => 'all'});
-} => 'view';
+  $self->redirect_to(view => {artist => 'alex', type => 'all'});
+};
 
-get '/view/:type' => sub {
+get '/view/:artist/:type' => sub {
   my $self = shift;
+  my $artist = $self->param('artist');
   my $type = $self->param('type');
   $self->render(template => 'view',
 		type => $type,
-		components => join(',', random_components($type)));
-} => 'viewtype';
+		components => join(',', random_components($type, $artist)));
+} => 'view';
+
+get '/gallery' => sub {
+  my $self = shift;
+  $self->redirect_to(gallerytype => {artist => 'alex', type => 'man'});
+};
 
 get '/gallery/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
+  $self->redirect_to(gallerytype => {artist => 'alex', type => $type});
+};
+
+get '/gallery/:artist/:type' => sub {
+  my $self = shift;
+  my $artist = $self->param('artist');
+  my $type = $self->param('type');
   $self->render(template => 'gallery',
 		type => $type,
 		components => join(';', map {
-		  join(',', random_components($type, $self->param('debug')));
+		  join(',', random_components($type, $artist, $self->param('debug')));
 				   } 1..10));
-} => 'gallerytype';
+} => 'gallery';
 
 get '/random' => sub {
   my $self = shift;
-  $self->render(format => 'png',
-		data => render_components(
-		  random_components()));
-} => 'random';
+  $self->redirect_to(random => {artist => 'alex'});
+};
 
 get '/random/:type' => sub {
   my $self = shift;
+  my $type = $self->param('type');
+  $self->redirect_to(random => {artist => 'alex', type => $type});
+};
+
+get '/random/:artist/:type' => sub {
+  my $self = shift;
+  my $artist = $self->param('artist');
+  my $type = $self->param('type');
   $self->render(format => 'png',
 		data => render_components(
 		  random_components(
-		    $self->param('type'))));
-} => 'randomtype';
+		    $type, $artist)));
+} => 'random';
 
 get '/face/#files' => sub {
   my $self = shift;
+  my $files = $self->param('files');
+  $self->redirect_to(face => {artist => 'alex', files => $files});
+};
+
+get '/face/:artist/#files' => sub {
+  my $self = shift;
+  my $artist = $self->param('artist');
+  my $files = $self->param('files');
   $self->render(format => 'png',
 		data => render_components(
-		  split(',', $self->param('files'))));
+		  $artist,
+		  split(',', $files)));
 } => 'face';
 
 get '/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
 		elements => join(',', all_elements()));
-} => 'debug';
+};
 
-get '/debug/:element' => sub {
+get '/debug/:artist' => sub {
   my $self = shift;
+  my $artist = $self->param('artist');
+  $self->render(template => 'debug',
+		artist => $artist,
+		elements => join(',', all_elements()));
+};
+
+get '/debug/:artist/:element' => sub {
+  my $self = shift;
+  my $artist = $self->param('artist');
   my $element = $self->param('element');
   $self->render(template => 'debugelement',
+		artist => $artist,
 		element => $element,
-		components => join(';', all_components($element)));
-} => 'debugelement';
+		components => join(';', all_components($artist, $element)));
+};
 
-get '/edit/#component' => sub {
+get '/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
   $self->render(template => 'edit',
 		components => "empty_all.png,$component");
 } => 'edit';
 
-get '/move/#component/:dir' => sub {
+get '/move/:artist/#component/:dir' => sub {
   my $self = shift;
   die unless $self->app->mode eq 'development';
+  my $artist = $self->param('artist');
   my $component = $self->param('component');
   my $dir = $self->param('dir');
-  move($component, $dir);
+  move($artist, $component, $dir);
   $self->render(template => 'edit',
 		components => "empty_all.png,$component");
 } => 'move';
@@ -116,9 +156,20 @@ sub one {
   return $_[$i];
 }
 
-sub all_components {
-  my $element = shift;
+sub all_artists {
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
+  my @dirs = grep {
+    !/\.png$/ # ignore images
+	&& substr($_, 0, 1) ne '.' # ignore "." and ".." and other "hidden files"
+	&& -d "$home/elements/$_"
+  } readdir($dh);
+  closedir $dh;
+  return @dirs;
+}
+
+sub all_components {
+  my ($artist, $element) = @_;
+  opendir(my $dh, "$home/elements/$artist") || die "Can't open $home/elements/$artist: $!";
   my @files = grep { /$element.*\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map { "empty_all.png,$_" } @files;
@@ -130,7 +181,7 @@ sub all_elements {
 }
 
 sub random_components {
-  my ($type, $debug) = @_;
+  my ($type, $artist, $debug) = @_;
   $type ||= 'all';
   # chin after mouth (mustache hides mouth)
   # nose after chin (mustache!)
@@ -139,7 +190,7 @@ sub random_components {
   my @elements = all_elements();
   unshift(@elements, 'empty') if $debug;
   push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
-  opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
+  opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map {
@@ -147,19 +198,19 @@ sub random_components {
     my @candidates1 = grep(/^${element}_/, @files);
     my @candidates2 = grep(/_${type}/, @candidates1) if $type;
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
-    one(@candidates2);
+    one(@candidates2) || '';
   } @elements;
   return @components;
 }
 
 sub render_components {
-  my @components = @_;
+  my ($artist, @components) = @_;
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
   $image->rectangle(0, 0, $image->getBounds(), $white);
   for my $component (@components) {
     next unless $component;
-    my $layer = GD::Image->new("$home/elements/$component");
+    my $layer = GD::Image->new("$home/elements/$artist/$component");
     $white = $layer->colorClosest(255,255,255); # find white
     $layer->transparent($white);
     $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
@@ -168,8 +219,8 @@ sub render_components {
 }
 
 sub move {
-  my ($element, $dir) = @_;
-  my $file = "$home/elements/$element";
+  my ($artist, $element, $dir) = @_;
+  my $file = "$home/elements/$artist/$element";
   my $original = GD::Image->new($file);
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
@@ -192,40 +243,48 @@ __DATA__
 % layout 'default';
 % title 'Faces';
 <h1>Faces for your RPG Characters</h1>
-<p>Here's what the app can do:
+<p>Pick the artist:
 <ul>
-<li><%= link_to 'Random Face' => 'view' %></li>
-<% if ($self->app->mode eq 'development') { %>
-<li><%= link_to 'Face Debugging' => 'debug' %></li>
-<% } %>
+<% for my $artist (split(/,/, $self->stash('artists'))) { %>\
+<li><%= link_to url_for(view => {artist => $artist, type => 'all'}) => begin %><%= $artist %><% end %>
+<% } %>\
 </ul>
+<% if ($self->app->mode eq 'development') { %>
+<p>
+Debugging:
+<ul>
+<% for my $artist (split(/,/, $self->stash('artists'))) { %>\
+<li><%= link_to url_for(debugartist => {artist => $artist}) => begin %><%= $artist %><% end %>
+<% } %>\
+</ul>
+<% } %>\
 
 @@ view.html.ep
 % layout 'default';
 % title 'Random Face';
-<h1>Random Face (<%= $type %>)</h1>
-<p><%= link_to url_for(viewtype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
-Or take a look at the <%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Gallery<% end %>.
+<h1>Random Face (<%= $artist %>/<%= $type %>)</h1>
+<p><%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
+Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.
 Or switch type:
 <% for my $t (qw(all man woman elf)) {
      next if $type eq $t;
-     $self->stash('t', $t); %>
-<%= link_to url_for(viewtype => {type => "$t"})   => begin %><%= $t %><% end %>
+     $self->stash('t', $t); %>\
+<%= link_to url_for(view => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
 <% } %>
 <p>
 <% my $components = $self->stash('components');
-   my $url = $self->url_for(face => { files => $components }); %>
+   my $url = $self->url_for(face => { artist=> $artist, files => $components }); %>\
 <a href="<%= $url %>" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
 <p>
 For demonstration purposes, you can also use this link to a
-<%= link_to url_for(randomtype => {type => "$type"}) => begin %>random face<% end %>.
+<%= link_to url_for(random => {artist => $artist, type => $type}) => begin %>random face<% end %>.
 
 @@ gallery.html.ep
 % layout 'default';
 % title 'Face Gallery';
-<h1>Face Gallery (<%= $type %>)</h1>
+<h1>Face Gallery (<%= $artist %>/<%= $type %>)</h1>
 <p><%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
 <p>
 <% for my $components (split(/;/, $self->stash('components'))) {
@@ -238,12 +297,12 @@ For demonstration purposes, you can also use this link to a
 @@ debug.html.ep
 % layout 'default';
 % title 'Face Debugging';
-<h1>Face Debugging</h1>
+<h1>Face Debugging (<%= $artist %>)</h1>
 <p>
 Pick an element:
 <ul>
 <% for my $element (split(/,/, $self->stash('elements'))) {
-   my $url  = $self->url_for(debugelement => { element => $element }); %>
+   my $url  = $self->url_for(debugartistelement => { artist => $artist, element => $element }); %>
 <li><a href="<%= $url %>"><%= $element %></a></li>
 <% } %>
 </ul>
@@ -251,12 +310,12 @@ Pick an element:
 @@ debugelement.html.ep
 % layout 'default';
 % title 'Face Debugging';
-<h1>Face Debugging (<%= $element %>)</h1>
+<h1>Face Debugging (<%= $artist %>/<%= $element %>)</h1>
 <p>
 <% for my $components (split(/;/, $self->stash('components'))) {
    my @components = split(/,/, $components);
-   my $url  = $self->url_for(face => { files => $components });
-   my $edit = $self->url_for(edit => { component => $components[$#components] }); %>
+   my $url  = $self->url_for(face => { artist => $artist, files => $components });
+   my $edit = $self->url_for(edit => { artist => $artist, component => $components[$#components] }); %>
 <a href="<%= $edit %>" class="edit">
 <img class="face" src="<%= $url %>">
 </a>

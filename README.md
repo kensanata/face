@@ -1,7 +1,8 @@
 # Random Faces
 
 This application goes through the files in the [elements](elements)
-folder and picks out one of each for every *element* of a face:
+folder for a given artist and picks out one of each for every
+*element* of a face.
 
 * eyes
 * nose
@@ -53,7 +54,9 @@ a similar resource.
 
 2. Use a blue fountain pen to draw a row of eyes, a row of noses, a
    row of mouths (maybe with mustaches), a row of hair (maybe with
-   hats), and a row of ears or chins (maybe with beards).
+   hats), and a row of ears or chins (maybe with beards). Or just draw
+   a sheet with just one element. Fifty components (two sheets) per
+   element seems to be a good starting point.
 
 3. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
@@ -73,11 +76,14 @@ a similar resource.
 5. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
    It cuts the scan into 5 × 5 images of 450 × 600 pixels each and
    labels them by row. You'd invoke it as follows: `perl
-   helpers/cutter.pl source1.png eyes nose mouth hair chin` or `perl
-   helpers/cutter.pl source2.png eyes nose mouth hair ears`. If the
-   remaining rows are all the same type, you don't need to repeat it.
-   Thus, if you've drawn a sheet full of eyes, just use `perl
-   cutter.pl source4.png eyes` and you're good.
+   helpers/cutter.pl source1.png alex eyes_all nose_all mouth_all
+   hair_all chin_all` or `perl helpers/cutter.pl source2.png alex
+   eyes_all nose_all mouth_all hair_all ears_all`. In other words:
+   First is the source image, then the artist name, and then you
+   provide the element for every row. If the remaining rows are all
+   the same element, you don't need to repeat it. Thus, if you've
+   drawn a sheet full of eyes, just use `perl cutter.pl source4.png
+   alex eyes_all` and you're good.
 
 6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
@@ -150,7 +156,7 @@ right-click and pick "Show Graphic". This leads me to a link like the
 following:
 
 ```
-http://localhost:3000/face/empty_all.png,eyes_all_72.png,mouth_all_49.png,chin_man_30.png,ears_all_5.png,nose_all_20.png,hair_man_21.png
+http://localhost:3000/face/alex/empty_all.png,eyes_all_72.png,mouth_all_49.png,chin_man_30.png,ears_all_5.png,nose_all_20.png,hair_man_21.png
 ```
 
 This shows me which elements were used to create the face I'm looking
@@ -161,7 +167,7 @@ place by providing the same file name twice to
 [ImageMagick](http://www.imagemagick.org/):
 
 ```
-convert -page +0+10 -background white -flatten elements/chin_man_30.png elements/chin_man_30.png
+convert -page +0+10 -background white -flatten elements/alex/chin_man_30.png elements/alex/chin_man_30.png
 ```
 
 If it turns out that you scanned a bunch of elements and they're all
@@ -171,7 +177,7 @@ pixels:
 
 ```
 for n in `seq 34`; do
-  convert -page +0+35 -background white -flatten elements/eyes_all_$n.png eyes_all_$n.png
+  convert -page +0+35 -background white -flatten elements/alex/eyes_all_$n.png eyes_all_$n.png
 done
 ```
 
@@ -186,5 +192,5 @@ are at the top and at the bottom, respectively.
 Example usage:
 
 ```
-perl helpers/top.pl elements/eyes_all_*
+perl helpers/top.pl elements/alex/eyes_all_*
 ```
