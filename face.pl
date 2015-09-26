@@ -94,8 +94,9 @@ get '/edit/#element' => sub {
 get '/move/#element/:dir' => sub {
   my $self = shift;
   die unless $self->app->mode eq 'development';
-  my $dir = $self->param('dir');
   my $element = $self->param('element');
+  my $dir = $self->param('dir');
+  move($element, $dir);
   $self->render(template => 'edit',
 		components => "empty_all.png,$element");
 } => 'move';
@@ -143,17 +144,34 @@ sub render_components {
   my @components = @_;
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
-  $image->rectangle(0,0, $image->getBounds(), $white);
+  $image->rectangle(0, 0, $image->getBounds(), $white);
   for my $component (@components) {
     next unless $component;
-    open(my $fh, '<', "$home/elements/$component")
-	|| die "Can't open $component: $!";
-    my $layer = GD::Image->newFromPng($fh);
+    my $layer = GD::Image->new("$home/elements/$component");
     $white = $layer->colorClosest(255,255,255); # find white
     $layer->transparent($white);
     $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
   }
   return $image->png();
+}
+
+sub move {
+  my ($element, $dir) = @_;
+  my $file = "$home/elements/$element";
+  my $original = GD::Image->new($file);
+  my $image = GD::Image->new(450, 600);
+  my $white = $image->colorAllocate(255,255,255); # find white
+  $image->rectangle(0, 0, $image->getBounds(), $white);
+  if ($dir eq 'up') {
+    $image->copy($original, 0, 0, 0, 10, $image->width, $image->height - 10);
+  } elsif ($dir eq 'down') {
+    $image->copy($original, 0, 10, 0, 0, $image->width, $image->height - 10);
+  } else {
+    die "Unknown direction: $dir\n";
+  }
+  open(my $fh, '>:raw', $file) or die "Cannot write $file: $!";
+  print $fh $image->png();
+  close($fh);
 }
 
 __DATA__
@@ -173,19 +191,18 @@ __DATA__
 <h1>Random Face (<%= $type %>)</h1>
 <p><%= link_to url_for(viewtype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
 Or take a look at the <%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Gallery<% end %>.
-<p>
-<% my $components = $self->stash('components');
-   my $url = $self->url_for(face => { files => $components }); %>
-<a href="<%= $url %>" download="random.png">
-<img class="face" src="<%= $url %>">
-</a>
-<p>
 Or switch type:
 <% for my $t (qw(all man woman elf)) {
      next if $type eq $t;
      $self->stash('t', $t); %>
 <%= link_to url_for(viewtype => {type => "$t"})   => begin %><%= $t %><% end %>
 <% } %>
+<p>
+<% my $components = $self->stash('components');
+   my $url = $self->url_for(face => { files => $components }); %>
+<a href="<%= $url %>" download="random.png">
+<img class="face" src="<%= $url %>">
+</a>
 <p>
 For demonstration purposes, you can also use this link to a
 <%= link_to url_for(randomtype => {type => "$type"}) => begin %>random face<% end %>.
