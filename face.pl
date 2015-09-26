@@ -49,23 +49,56 @@ get '/gallery/:type' => sub {
   my $type = $self->param('type');
   $self->render(template => 'gallery',
 		type => $type,
-		components => join(';', map { join(',', random_components($type)) } 1..10));
+		components => join(';', map {
+		  join(',', random_components($type, $self->param('debug')));
+				   } 1..10));
 } => 'gallerytype';
 
 get '/random' => sub {
   my $self = shift;
-  $self->render(data => render_components(random_components()), format => 'png');
+  $self->render(format => 'png',
+		data => render_components(
+		  random_components()));
 } => 'random';
 
 get '/random/:type' => sub {
   my $self = shift;
-  $self->render(data => render_components(random_components($self->param('type'))), format => 'png');
+  $self->render(format => 'png',
+		data => render_components(
+		  random_components(
+		    $self->param('type'))));
 } => 'randomtype';
 
 get '/face/#files' => sub {
   my $self = shift;
-  $self->render(data => render_components(split(',', $self->param('files'))), format => 'png');
+  $self->render(format => 'png',
+		data => render_components(
+		  split(',', $self->param('files'))));
 } => 'face';
+
+get '/debug/:type' => sub {
+  my $self = shift;
+  my $type = $self->param('type');
+  $self->render(template => 'debug',
+		type => $type,
+		components => join(';', all_components($type)));
+} => 'debug';
+
+get '/edit/#element' => sub {
+  my $self = shift;
+  my $element = $self->param('element');
+  $self->render(template => 'edit',
+		components => "empty_all.png,$element");
+} => 'edit';
+
+get '/move/#element/:dir' => sub {
+  my $self = shift;
+  die unless $self->app->mode eq 'development';
+  my $dir = $self->param('dir');
+  my $element = $self->param('element');
+  $self->render(template => 'edit',
+		components => "empty_all.png,$element");
+} => 'move';
 
 app->start;
 
@@ -74,17 +107,27 @@ sub one {
   return $_[$i];
 }
 
+sub all_components {
+  my $type = shift;
+  opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
+  my @files = grep { /$type.*\.png$/ } readdir($dh);
+  closedir $dh;
+  my @components = map { "empty_all.png,$_" } @files;
+  return @components;
+}
+
 sub random_components {
-  my $type = shift||'all';
+  my ($type, $debug) = @_;
+  $type ||= 'all';
   # chin after mouth (mustache hides mouth)
   # nose after chin (mustache!)
   # hair after ears
   # ears after chin
   my @elements = qw(eyes mouth chin ears nose hair);
+  unshift(@elements, 'empty') if $debug;
   push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
-  my @files;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
-  @files = grep { /\.png$/ } readdir($dh);
+  my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components = map {
     my $element = $_; # inside grep $_ points to a file
@@ -154,12 +197,43 @@ For demonstration purposes, you can also use this link to a
 <p><%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
 <p>
 <% for my $components (split(/;/, $self->stash('components'))) {
-   warn $components;
    my $url = $self->url_for(face => { files => $components }); %>
 <a href="<%= $url %>" class="download" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
 <% } %>
+
+@@ debug.html.ep
+% layout 'default';
+% title 'Face Debugging';
+<h1>Face Debugging (<%= $type %>)</h1>
+<p>
+<% for my $components (split(/;/, $self->stash('components'))) {
+   my @elements = split(/,/, $components);
+   my $url  = $self->url_for(face => { files => $components });
+   my $edit = $self->url_for(edit => { element => $elements[$#elements] }); %>
+<a href="<%= $edit %>" class="edit">
+<img class="face" src="<%= $url %>">
+</a>
+<% } %>
+
+@@ edit.html.ep
+% layout 'default';
+% title 'Element Edit';
+<h1>Element Edit</h1>
+<p>
+<% my $i = 0;
+   my $components = $self->stash('components');
+   my @elements = split(/,/, $components);
+   my $url  = $self->url_for(face => { files => $components });
+   my $up   = $self->url_for(move => { element => $elements[$#elements], dir => 'up'});
+   my $down = $self->url_for(move => { element => $elements[$#elements], dir => 'down'});
+   $i++; %>
+<img class="debug face" usemap="#map" src="<%= $url %>">
+<map name="map">
+  <area shape=rect coords="0,0,225,150" href="<%= $up %>" alt="Move up">
+  <area shape=rect coords="0,150,225,300" href="<%= $down %>" alt="Move down">
+</map>
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
@@ -169,7 +243,7 @@ For demonstration purposes, you can also use this link to a
 %= stylesheet '/face.css'
 %= stylesheet begin
 body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
-.download { text-decoration: none }
+a.download, a.edit { text-decoration: none }
 .face { height: 300px; }
 #logo { position: absolute; top: 0; right: 2em; }
 % end
@@ -180,6 +254,7 @@ body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino,
 <%= content %>
 <hr>
 <p>
+All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
 <a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a>&#x2003;<a href="https://github.com/kensanata/face">Source on GitHub</a>
 </body>
 </html>

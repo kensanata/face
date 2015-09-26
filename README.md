@@ -96,10 +96,67 @@ libgd-gd2-perl`). The clean up instructions depend on
 [ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
 imagemagick`).
 
-# Moving stuff around
+# Installation
+
+You can simply install it as a CGI script on your web server.
+
+As the [script](face.pl) is a [Mojolicious](http://mojolicio.us/) app,
+there are many other ways to deploy it. There is a
+[Cookbook](http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT)
+with a section on deployment. Here's a quick summary:
+
+This runs the script as a server on
+[localhost:3000](http://localhost:3000/):
+
+```
+perl face.pl daemon
+```
+
+This runs the script as a server on
+[localhost:3000](http://localhost:3000/) and reloads it every time you
+change it:
+
+```
+morbo face.pl
+```
+
+This runs the script as a server on
+[localhost:8080](http://localhost:8080/), writing a pid file:
+
+```
+hypnotoad face.pl
+```
+
+# Finding and fixing misaligned elements
+
+I start the script using morbo and visit the gallery URLs with the
+debug parameter set to 1:
+
+```
+http://localhost:3000/gallery/man?debug=1
+```
+
+Then I just reload until I find a face where things are misaligned. I
+right-click and pick "Show Graphic". This leads me to a link like the
+following:
+
+```
+http://localhost:3000/face/empty_all.png,eyes_all_72.png,mouth_all_49.png,chin_man_30.png,ears_all_5.png,nose_all_20.png,hair_man_21.png
+```
+
+This shows me which elements were used to create the face I'm looking
+at.
+
+If you've found just a single misaligned element, you can change it in
+place by providing the same file name twice to
+[ImageMagick](http://www.imagemagick.org/):
+
+```
+convert -page +0+10 -background white -flatten elements/chin_man_30.png elements/chin_man_30.png
+```
 
 If it turns out that you scanned a bunch of elements and they're all
-shifted by some amount, you can use the command line to make your life
+shifted by some amount, you can use the shell to make your life
 easier. Here is what I used to shift some old eye elements down by 35
 pixels:
 
@@ -108,6 +165,9 @@ for n in `seq 34`; do
   convert -page +0+35 -background white -flatten elements/eyes_all_$n.png eyes_all_$n.png
 done
 ```
+
+This will create copies in your current directory. If you're happy,
+move them back into the elements folder.
 
 If you need help figuring out by how much you might want to shift
 images, you can use [top.pl](helpers/top.pl) and
