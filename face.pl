@@ -274,8 +274,8 @@ Debugging:
 % layout 'default';
 % title 'Random Face';
 <h1>Random Face (<%= $artist %>/<%= $type %>)</h1>
-<p><%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.
-Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.
+<p><%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.<br>
+Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.<br>
 Or switch type:
 <% for my $t (qw(all man woman elf)) {
      next if $type eq $t;
@@ -336,6 +336,11 @@ Pick an element:
 % layout 'default';
 % title 'Element Edit';
 <h1>Element Edit</h1>
+<p style="width: 80ex">
+Here's where you can make small edits to an element. The image below has eight
+zones. Clicking the zone moves the element in its respective direction. The
+outer zones move the element by ten pixels, the inner zones move the element by
+five pixels.
 <p>
 <% my $i = 0;
    my $components = $self->stash('components');
