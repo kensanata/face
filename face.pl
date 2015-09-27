@@ -134,7 +134,7 @@ get '/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
   $self->render(template => 'edit',
-		components => "empty_all.png,$component");
+		components => "empty.png,edit.png,$component");
 } => 'edit';
 
 get '/move/:artist/#component/:dir' => sub {
@@ -143,9 +143,10 @@ get '/move/:artist/#component/:dir' => sub {
   my $artist = $self->param('artist');
   my $component = $self->param('component');
   my $dir = $self->param('dir');
-  move($artist, $component, $dir);
+  my $step = $self->param('step') || 10;
+  move($artist, $component, $dir, $step);
   $self->render(template => 'edit',
-		components => "empty_all.png,$component");
+		components => "empty.png,edit.png,$component");
 } => 'move';
 
 app->mode('production') if $ENV{GATEWAY_INTERFACE};
@@ -173,7 +174,7 @@ sub all_components {
   opendir(my $dh, "$home/elements/$artist") || die "Can't open $home/elements/$artist: $!";
   my @files = grep { /$element.*\.png$/ } readdir($dh);
   closedir $dh;
-  my @components = map { "empty_all.png,$_" } @files;
+  my @components = map { "empty.png,$_" } @files;
   return @components;
 }
 
@@ -189,7 +190,6 @@ sub random_components {
   # hair after ears
   # ears after chin
   my @elements = all_elements();
-  unshift(@elements, 'empty') if $debug;
   push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
@@ -201,6 +201,7 @@ sub random_components {
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     one(@candidates2) || '';
   } @elements;
+  unshift(@elements, 'empty.png') if $debug;
   return @components;
 }
 
@@ -211,7 +212,12 @@ sub render_components {
   $image->rectangle(0, 0, $image->getBounds(), $white);
   for my $component (@components) {
     next unless $component;
-    my $layer = GD::Image->new("$home/elements/$artist/$component");
+    my $layer;
+    if ($component eq 'empty.png' or $component eq 'edit.png') {
+      $layer = GD::Image->new("$home/elements/$component");
+    } else {
+      $layer = GD::Image->new("$home/elements/$artist/$component");
+    }
     $white = $layer->colorClosest(255,255,255); # find white
     $layer->transparent($white);
     $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
@@ -220,16 +226,20 @@ sub render_components {
 }
 
 sub move {
-  my ($artist, $element, $dir) = @_;
+  my ($artist, $element, $dir, $step) = @_;
   my $file = "$home/elements/$artist/$element";
   my $original = GD::Image->new($file);
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
   $image->rectangle(0, 0, $image->getBounds(), $white);
   if ($dir eq 'up') {
-    $image->copy($original, 0, 0, 0, 10, $image->width, $image->height - 10);
+    $image->copy($original, 0, 0, 0, $step, $image->width, $image->height - $step);
   } elsif ($dir eq 'down') {
-    $image->copy($original, 0, 10, 0, 0, $image->width, $image->height - 10);
+    $image->copy($original, 0, $step, 0, 0, $image->width, $image->height - $step);
+  } elsif ($dir eq 'left') {
+    $image->copy($original, 0, 0, $step, 0, $image->width - $step, $image->height);
+  } elsif ($dir eq 'right') {
+    $image->copy($original, $step, 0, 0, 0, $image->width - $step, $image->height);
   } else {
     die "Unknown direction: $dir\n";
   }
@@ -330,14 +340,19 @@ Pick an element:
 <% my $i = 0;
    my $components = $self->stash('components');
    my @components = split(/,/, $components);
-   my $url  = $self->url_for(face => { files => $components });
-   my $up   = $self->url_for(move => { component => $components[$#components], dir => 'up'});
-   my $down = $self->url_for(move => { component => $components[$#components], dir => 'down'});
+   my $url   = $self->url_for(face => { files => $components });
+   my $up    = $self->url_for(move => { component => $components[$#components], dir => 'up'});
+   my $down  = $self->url_for(move => { component => $components[$#components], dir => 'down'});
+   my $left  = $self->url_for(move => { component => $components[$#components], dir => 'left'});
+   my $right = $self->url_for(move => { component => $components[$#components], dir => 'right'});
    $i++; %>
+
 <img class="debug face" usemap="#map" src="<%= $url %>">
 <map name="map">
-  <area shape=rect coords="0,0,225,150" href="<%= $up %>" alt="Move up">
-  <area shape=rect coords="0,150,225,300" href="<%= $down %>" alt="Move down">
+  <area shape=poly coords="0,0,112,112,225,0" href="<%= $up %>" alt="Move up">
+  <area shape=poly coords="0,300,112,188,225,300" href="<%= $down %>" alt="Move down">
+  <area shape=poly coords="0,0,112,112,112,188,0,300" href="<%= $left %>" alt="Move left">
+  <area shape=poly coords="225,0,113,113,113,188,225,300" href="<%= $right %>" alt="Move right">
 </map>
 
 @@ layouts/default.html.ep
