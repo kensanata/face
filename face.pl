@@ -340,19 +340,27 @@ Pick an element:
 <% my $i = 0;
    my $components = $self->stash('components');
    my @components = split(/,/, $components);
-   my $url   = $self->url_for(face => { files => $components });
-   my $up    = $self->url_for(move => { component => $components[$#components], dir => 'up'});
-   my $down  = $self->url_for(move => { component => $components[$#components], dir => 'down'});
-   my $left  = $self->url_for(move => { component => $components[$#components], dir => 'left'});
-   my $right = $self->url_for(move => { component => $components[$#components], dir => 'right'});
+   my $url        = $self->url_for(face => { files => $components });
+   my $up         = $self->url_for(move => { component => $components[$#components], dir => 'up'});
+   my $down       = $self->url_for(move => { component => $components[$#components], dir => 'down'});
+   my $left       = $self->url_for(move => { component => $components[$#components], dir => 'left'});
+   my $right      = $self->url_for(move => { component => $components[$#components], dir => 'right'});
+   my $half_up    = $self->url_for(move => { component => $components[$#components], dir => 'up'})->query(step => 5);
+   my $half_down  = $self->url_for(move => { component => $components[$#components], dir => 'down'})->query(step => 5);
+   my $half_left  = $self->url_for(move => { component => $components[$#components], dir => 'left'})->query(step => 5);
+   my $half_right = $self->url_for(move => { component => $components[$#components], dir => 'right'})->query(step => 5);
    $i++; %>
 
 <img class="debug face" usemap="#map" src="<%= $url %>">
 <map name="map">
-  <area shape=poly coords="0,0,112,112,225,0" href="<%= $up %>" alt="Move up">
-  <area shape=poly coords="0,300,112,188,225,300" href="<%= $down %>" alt="Move down">
-  <area shape=poly coords="0,0,112,112,112,188,0,300" href="<%= $left %>" alt="Move left">
-  <area shape=poly coords="225,0,113,113,113,188,225,300" href="<%= $right %>" alt="Move right">
+  <area shape=poly coords="0,0,56,56,168,56,224,0" href="<%= $up %>" alt="Move up">
+  <area shape=poly coords="0,299,56,243,168,243,224,299" href="<%= $down %>" alt="Move down">
+  <area shape=poly coords="0,0,56,56,56,243,0,299" href="<%= $left %>" alt="Move left">
+  <area shape=poly coords="224,0,168,56,168,243,224,299" href="<%= $right %>" alt="Move right">
+  <area shape=poly coords="56,56,112,112,168,56" href="<%= $half_up %>" alt="Move half up">
+  <area shape=poly coords="56,243,112,188,168,243" href="<%= $half_down %>" alt="Move half down">
+  <area shape=poly coords="56,56,112,112,112,188,56,243" href="<%= $half_left %>" alt="Move half left">
+  <area shape=poly coords="168,56,112,112,112,188,168,243" href="<%= $half_right %>" alt="Move half right">
 </map>
 
 @@ layouts/default.html.ep
