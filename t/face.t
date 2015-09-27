@@ -30,6 +30,8 @@ my $t = Test::Mojo->new;
 sub png_images_ok {
   my $images = shift;
 
+  ok($images, "images provided by " . $t->tx->req->url);
+  
   for my $image (@$images) {
     
     my $url = $image->attr('src');
@@ -47,7 +49,7 @@ $t->get_ok('/')
     ->status_is(200)
     ->text_is('h1' => 'Faces for your RPG Characters')
     # alex
-    ->element_exists('li a[href="/view/alex/all"]')
+    ->element_exists('li a[href="/view/alex/woman"]')
     # but not debugging alex
     ->element_exists_not('li a[href="/debug/alex"]');
 
@@ -59,7 +61,7 @@ $t->get_ok('/')
 
 $t->get_ok('/view')
     ->status_is(302)
-    ->header_is(Location => '/view/alex/all');
+    ->header_is(Location => '/view/alex/woman');
 
 $t->get_ok('/gallery')
     ->status_is(302)
