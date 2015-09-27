@@ -34,7 +34,7 @@ get '/' => sub {
 
 get '/view' => sub {
   my $self = shift;
-  $self->redirect_to(view => {artist => 'alex', type => 'all'});
+  $self->redirect_to(view => {artist => 'alex', type => 'woman'});
 };
 
 get '/view/:artist/:type' => sub {
@@ -257,7 +257,7 @@ __DATA__
 <p>Pick the artist:
 <ul>
 <% for my $artist (split(/,/, $self->stash('artists'))) { %>\
-<li><%= link_to url_for(view => {artist => $artist, type => 'all'}) => begin %><%= $artist %><% end %>
+<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artist %><% end %>
 <% } %>\
 </ul>
 <% if ($self->app->mode eq 'development') { %>
@@ -277,10 +277,16 @@ Debugging:
 <p><%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.<br>
 Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.<br>
 Or switch type:
-<% for my $t (qw(all man woman elf)) {
+<% for my $t (qw(man woman elf all)) {
      next if $type eq $t;
      $self->stash('t', $t); %>\
 <%= link_to url_for(view => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
+<% } %>
+<% if ($type eq 'all') { %>
+<p class="text">
+You're currently looking at the <i>all</i> type. This excludes hair and chin
+because these two elements are specific pro type. In all likelyhood, these faces
+won't look all that great.
 <% } %>
 <p>
 <% my $components = $self->stash('components');
@@ -336,7 +342,7 @@ Pick an element:
 % layout 'default';
 % title 'Element Edit';
 <h1>Element Edit</h1>
-<p style="width: 80ex">
+<p class="text">
 Here's where you can make small edits to an element. The image below has eight
 zones. Clicking the zone moves the element in its respective direction. The
 outer zones move the element by ten pixels, the inner zones move the element by
@@ -375,10 +381,11 @@ five pixels.
 <title><%= title %></title>
 %= stylesheet '/face.css'
 %= stylesheet begin
-body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
+body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif }
 a.download, a.edit { text-decoration: none }
-.face { height: 300px; }
-#logo { position: absolute; top: 0; right: 2em; }
+.face { height: 300px }
+.text { width: 80ex }
+#logo { position: absolute; top: 0; right: 2em }
 % end
 <meta name="viewport" content="width=device-width">
 </head>
