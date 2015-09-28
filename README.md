@@ -194,3 +194,24 @@ Example usage:
 ```
 perl helpers/top.pl elements/alex/eyes_all_*
 ```
+
+# Alternative look
+
+For [my images](elements/alex) I enforced a blue color map because I
+was doing my drawings using a blue fountain pen. This is the command
+line I used in my example above: `convert -blur 0x1 +dither -remap
+tintenblau.png scan1.jpg source1.png`
+
+If you do your drawings using a pencil, you might want to keep the
+pencil look. I'll suggest the following command line: `convert -blur
+0x1 +dither -level 30%,80% scan1.jpg source1.png`. Like in the
+previous example, I used a 1px blur and then I adjusted levels:
+anything below 30% is black and anything above 80% is white. It looks
+OK. No trace of the helping lines left and it keeps the pencil gray.
+
+If you do your drawings using a pencil but you'd like to give it an
+inked look, you migh want to increase the percentage for the black
+level. I'll suggest the following comand line: `convert -blur 0x1
++dither -level 50%,80% -grayscale rec709luma scan1.jpg source1.png`.
+Now anything below 50% is black. I also converted it to grayscale at
+the end because the very light pixles seemed to have random colors.
