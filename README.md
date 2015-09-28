@@ -82,8 +82,8 @@ a similar resource.
    First is the source image, then the artist name, and then you
    provide the element for every row. If the remaining rows are all
    the same element, you don't need to repeat it. Thus, if you've
-   drawn a sheet full of eyes, just use `perl cutter.pl source4.png
-   alex eyes_all` and you're good.
+   drawn a sheet full of eyes, just use `perl helpers/cutter.pl
+   source4.png alex eyes_all` and you're good.
 
 6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
