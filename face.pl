@@ -29,7 +29,7 @@ $home->detect;
 get '/' => sub {
   my $self = shift;
   $self->render(template => 'index',
-		artists => [all_artists()]);
+		artists => all_artists());
 } => 'main';
 
 get '/view' => sub {
@@ -149,16 +149,15 @@ get '/move/:artist/#component/:dir' => sub {
 		components => ['empty.png', 'edit.png', $component]);
 } => 'move';
 
-app->mode('production') if $ENV{GATEWAY_INTERFACE};
-
-app->start;
-
 sub one {
   my $i = int(rand(scalar @_));
   return $_[$i];
 }
 
+my %artists;
+
 sub all_artists {
+  return \%artists if %artists;
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   my @dirs = grep {
     !/\.png$/ # ignore images
@@ -166,7 +165,17 @@ sub all_artists {
 	&& -d "$home/elements/$_"
   } readdir($dh);
   closedir $dh;
-  return @dirs;
+  for my $dir (@dirs) {
+    $artists{$dir} = $dir; # default
+    open(my $fh, '<:utf8', "$home/elements/$dir/README.md") or next;
+    local $/ = undef;
+    my $text = <$fh>;
+    if ($text =~ /\[([^]]*)\]/) {
+      $artists{$dir} = $1;
+    }
+    close($fh);
+  }
+  return \%artists;
 }
 
 sub all_components {
@@ -248,6 +257,10 @@ sub move {
   close($fh);
 }
 
+app->mode('production') if $ENV{GATEWAY_INTERFACE};
+
+app->start;
+
 __DATA__
 
 @@ index.html.ep
@@ -256,16 +269,16 @@ __DATA__
 <h1>Faces for your RPG Characters</h1>
 <p>Pick the artist:
 <ul>
-<% for my $artist (@$artists) { %>\
-<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artist %><% end %>
+<% for my $artist (sort keys %$artists) { %>\
+<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist} %><% end %>
 <% } %>\
 </ul>
 <% if ($self->app->mode eq 'development') { %>
 <p>
 Debugging:
 <ul>
-<% for my $artist (@$artists) { %>\
-<li><%= link_to url_for(debugartist => {artist => $artist}) => begin %><%= $artist %><% end %>
+<% for my $artist (sort keys %$artists) { %>\
+<li><%= link_to url_for(debugartist => {artist => $artist}) => begin %><%= $artists->{$artist} %><% end %>
 <% } %>\
 </ul>
 <% } %>\
