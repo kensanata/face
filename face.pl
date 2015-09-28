@@ -29,7 +29,7 @@ $home->detect;
 get '/' => sub {
   my $self = shift;
   $self->render(template => 'index',
-		artists => all_artists());
+		artists => [all_artists()]);
 } => 'main';
 
 get '/view' => sub {
@@ -43,7 +43,7 @@ get '/view/:artist/:type' => sub {
   my $type = $self->param('type');
   $self->render(template => 'view',
 		type => $type,
-		components => join(',', random_components($type, $artist)));
+		components => [random_components($type, $artist)]);
 } => 'view';
 
 get '/gallery' => sub {
@@ -63,9 +63,9 @@ get '/gallery/:artist/:type' => sub {
   my $type = $self->param('type');
   $self->render(template => 'gallery',
 		type => $type,
-		components => join(';', map {
-		  join(',', random_components($type, $artist, $self->param('debug')));
-				   } 1..10));
+		components => [map {
+		  [random_components($type, $artist, $self->param('debug'))];
+			       } 1..10]);
 } => 'gallery';
 
 get '/random' => sub {
@@ -109,7 +109,7 @@ get '/face/:artist/#files' => sub {
 get '/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
-		elements => join(',', all_elements()));
+		elements => [all_elements()]);
 };
 
 get '/debug/:artist' => sub {
@@ -117,7 +117,7 @@ get '/debug/:artist' => sub {
   my $artist = $self->param('artist');
   $self->render(template => 'debug',
 		artist => $artist,
-		elements => join(',', all_elements()));
+		elements => [all_elements()]);
 };
 
 get '/debug/:artist/:element' => sub {
@@ -127,14 +127,14 @@ get '/debug/:artist/:element' => sub {
   $self->render(template => 'debugelement',
 		artist => $artist,
 		element => $element,
-		components => join(';', all_components($artist, $element)));
+		components => [all_components($artist, $element)]);
 };
 
 get '/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
   $self->render(template => 'edit',
-		components => "empty.png,edit.png,$component");
+		components => ['empty.png', 'edit.png', $component]);
 } => 'edit';
 
 get '/move/:artist/#component/:dir' => sub {
@@ -146,7 +146,7 @@ get '/move/:artist/#component/:dir' => sub {
   my $step = $self->param('step') || 10;
   move($artist, $component, $dir, $step);
   $self->render(template => 'edit',
-		components => "empty.png,edit.png,$component");
+		components => ['empty.png', 'edit.png', $component]);
 } => 'move';
 
 app->mode('production') if $ENV{GATEWAY_INTERFACE};
@@ -174,7 +174,7 @@ sub all_components {
   opendir(my $dh, "$home/elements/$artist") || die "Can't open $home/elements/$artist: $!";
   my @files = grep { /$element.*\.png$/ } readdir($dh);
   closedir $dh;
-  my @components = map { "empty.png,$_" } @files;
+  my @components = map { ['empty.png', $_] } @files;
   return @components;
 }
 
@@ -256,7 +256,7 @@ __DATA__
 <h1>Faces for your RPG Characters</h1>
 <p>Pick the artist:
 <ul>
-<% for my $artist (split(/,/, $self->stash('artists'))) { %>\
+<% for my $artist (@$artists) { %>\
 <li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artist %><% end %>
 <% } %>\
 </ul>
@@ -264,7 +264,7 @@ __DATA__
 <p>
 Debugging:
 <ul>
-<% for my $artist (split(/,/, $self->stash('artists'))) { %>\
+<% for my $artist (@$artists) { %>\
 <li><%= link_to url_for(debugartist => {artist => $artist}) => begin %><%= $artist %><% end %>
 <% } %>\
 </ul>
@@ -289,8 +289,7 @@ because these two elements are specific pro type. In all likelyhood, these faces
 won't look all that great.
 <% } %>
 <p>
-<% my $components = $self->stash('components');
-   my $url = $self->url_for(face => { artist=> $artist, files => $components }); %>\
+<% my $url = $self->url_for(face => { artist=> $artist, files => join(',', @$components)}); %>\
 <a href="<%= $url %>" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
@@ -304,8 +303,8 @@ For demonstration purposes, you can also use this link to a
 <h1>Face Gallery (<%= $artist %>/<%= $type %>)</h1>
 <p><%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
 <p>
-<% for my $components (split(/;/, $self->stash('components'))) {
-   my $url = $self->url_for(face => { files => $components }); %>
+<% for my $files (@$components) {
+   my $url = $self->url_for(face => { files => join(',', @$files)}); %>
 <a href="<%= $url %>" class="download" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
@@ -318,7 +317,7 @@ For demonstration purposes, you can also use this link to a
 <p>
 Pick an element:
 <ul>
-<% for my $element (split(/,/, $self->stash('elements'))) {
+<% for my $element (@$elements) {
    my $url  = $self->url_for(debugartistelement => { artist => $artist, element => $element }); %>
 <li><a href="<%= $url %>"><%= $element %></a></li>
 <% } %>
@@ -329,10 +328,9 @@ Pick an element:
 % title 'Face Debugging';
 <h1>Face Debugging (<%= $artist %>/<%= $element %>)</h1>
 <p>
-<% for my $components (split(/;/, $self->stash('components'))) {
-   my @components = split(/,/, $components);
-   my $url  = $self->url_for(face => { artist => $artist, files => $components });
-   my $edit = $self->url_for(edit => { artist => $artist, component => $components[$#components] }); %>
+<% for my $files (@$components) {
+   my $url  = $self->url_for(face => { artist => $artist, files => join(',', @$files) });
+   my $edit = $self->url_for(edit => { artist => $artist, component => $files->[-1] }); %>
 <a href="<%= $edit %>" class="edit">
 <img class="face" src="<%= $url %>">
 </a>
@@ -349,17 +347,15 @@ outer zones move the element by ten pixels, the inner zones move the element by
 five pixels.
 <p>
 <% my $i = 0;
-   my $components = $self->stash('components');
-   my @components = split(/,/, $components);
-   my $url        = $self->url_for(face => { files => $components });
-   my $up         = $self->url_for(move => { component => $components[$#components], dir => 'up'});
-   my $down       = $self->url_for(move => { component => $components[$#components], dir => 'down'});
-   my $left       = $self->url_for(move => { component => $components[$#components], dir => 'left'});
-   my $right      = $self->url_for(move => { component => $components[$#components], dir => 'right'});
-   my $half_up    = $self->url_for(move => { component => $components[$#components], dir => 'up'})->query(step => 5);
-   my $half_down  = $self->url_for(move => { component => $components[$#components], dir => 'down'})->query(step => 5);
-   my $half_left  = $self->url_for(move => { component => $components[$#components], dir => 'left'})->query(step => 5);
-   my $half_right = $self->url_for(move => { component => $components[$#components], dir => 'right'})->query(step => 5);
+   my $url        = $self->url_for(face => { files => join(',', @$components) });
+   my $up         = $self->url_for(move => { component => $components->[-1], dir => 'up'});
+   my $down       = $self->url_for(move => { component => $components->[-1], dir => 'down'});
+   my $left       = $self->url_for(move => { component => $components->[-1], dir => 'left'});
+   my $right      = $self->url_for(move => { component => $components->[-1], dir => 'right'});
+   my $half_up    = $self->url_for(move => { component => $components->[-1], dir => 'up'})->query(step => 5);
+   my $half_down  = $self->url_for(move => { component => $components->[-1], dir => 'down'})->query(step => 5);
+   my $half_left  = $self->url_for(move => { component => $components->[-1], dir => 'left'})->query(step => 5);
+   my $half_right = $self->url_for(move => { component => $components->[-1], dir => 'right'})->query(step => 5);
    $i++; %>
 
 <img class="debug face" usemap="#map" src="<%= $url %>">
