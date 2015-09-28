@@ -28,16 +28,21 @@ $home->detect;
 
 get '/' => sub {
   my $self = shift;
+  $self->redirect_to('main');
+};
+
+get '/face' => sub {
+  my $self = shift;
   $self->render(template => 'index',
 		artists => all_artists());
 } => 'main';
 
-get '/view' => sub {
+get '/face/view' => sub {
   my $self = shift;
   $self->redirect_to(view => {artist => 'alex', type => 'woman'});
 };
 
-get '/view/:artist/:type' => sub {
+get '/face/view/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -46,18 +51,18 @@ get '/view/:artist/:type' => sub {
 		components => [random_components($type, $artist)]);
 } => 'view';
 
-get '/gallery' => sub {
+get '/face/gallery' => sub {
   my $self = shift;
   $self->redirect_to(gallery => {artist => 'alex', type => 'man'});
 };
 
-get '/gallery/:type' => sub {
+get '/face/gallery/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
   $self->redirect_to(gallery => {artist => 'alex', type => $type});
 };
 
-get '/gallery/:artist/:type' => sub {
+get '/face/gallery/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -68,18 +73,18 @@ get '/gallery/:artist/:type' => sub {
 			       } 1..10]);
 } => 'gallery';
 
-get '/random' => sub {
+get '/face/random' => sub {
   my $self = shift;
   $self->redirect_to(random => {artist => 'alex', type => 'woman'});
 };
 
-get '/random/:type' => sub {
+get '/face/random/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
   $self->redirect_to(random => {artist => 'alex', type => $type});
 };
 
-get '/random/:artist/:type' => sub {
+get '/face/random/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -90,13 +95,13 @@ get '/random/:artist/:type' => sub {
 		    $type, $artist)));
 } => 'random';
 
-get '/face/#files' => sub {
+get '/face/face/#files' => sub {
   my $self = shift;
   my $files = $self->param('files');
   $self->redirect_to(face => {artist => 'alex', files => $files});
 };
 
-get '/face/:artist/#files' => sub {
+get '/face/face/:artist/#files' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $files = $self->param('files');
@@ -106,13 +111,13 @@ get '/face/:artist/#files' => sub {
 		  split(',', $files)));
 } => 'face';
 
-get '/debug' => sub {
+get '/face/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
 		elements => [all_elements()]);
 };
 
-get '/debug/:artist' => sub {
+get '/face/debug/:artist' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   $self->render(template => 'debug',
@@ -120,7 +125,7 @@ get '/debug/:artist' => sub {
 		elements => [all_elements()]);
 };
 
-get '/debug/:artist/:element' => sub {
+get '/face/debug/:artist/:element' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $element = $self->param('element');
@@ -130,14 +135,14 @@ get '/debug/:artist/:element' => sub {
 		components => [all_components($artist, $element)]);
 };
 
-get '/edit/:artist/#component' => sub {
+get '/face/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
   $self->render(template => 'edit',
 		components => ['empty.png', 'edit.png', $component]);
 } => 'edit';
 
-get '/move/:artist/#component/:dir' => sub {
+get '/face/move/:artist/#component/:dir' => sub {
   my $self = shift;
   die unless $self->app->mode eq 'development';
   my $artist = $self->param('artist');
@@ -388,7 +393,7 @@ five pixels.
 <html>
 <head>
 <title><%= title %></title>
-%= stylesheet '/face.css'
+%= stylesheet '/face/face.css'
 %= stylesheet begin
 body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif }
 a.download, a.edit { text-decoration: none }
