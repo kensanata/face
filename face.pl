@@ -115,7 +115,7 @@ get '/face/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
 		elements => [all_elements()]);
-};
+} => 'debug';
 
 get '/face/debug/:artist' => sub {
   my $self = shift;
@@ -123,7 +123,7 @@ get '/face/debug/:artist' => sub {
   $self->render(template => 'debug',
 		artist => $artist,
 		elements => [all_elements()]);
-};
+} => 'debug_artist';
 
 get '/face/debug/:artist/:element' => sub {
   my $self = shift;
@@ -133,7 +133,7 @@ get '/face/debug/:artist/:element' => sub {
 		artist => $artist,
 		element => $element,
 		components => [all_components($artist, $element)]);
-};
+} => 'debug_element';
 
 get '/face/edit/:artist/#component' => sub {
   my $self = shift;
@@ -283,7 +283,7 @@ __DATA__
 Debugging:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
-<li><%= link_to url_for(debugartist => {artist => $artist}) => begin %><%= $artists->{$artist} %><% end %>
+<li><%= link_to url_for(debug_artist => {artist => $artist}) => begin %><%= $artists->{$artist} %><% end %>
 <% } %>\
 </ul>
 <% } %>\
@@ -336,7 +336,7 @@ For demonstration purposes, you can also use this link to a
 Pick an element:
 <ul>
 <% for my $element (@$elements) {
-   my $url  = $self->url_for(debugartistelement => { artist => $artist, element => $element }); %>
+   my $url  = $self->url_for(debug_element => { artist => $artist, element => $element }); %>
 <li><a href="<%= $url %>"><%= $element %></a></li>
 <% } %>
 </ul>
