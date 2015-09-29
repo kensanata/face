@@ -67,6 +67,7 @@ get '/face/view/:artist/:type' => sub {
   my $type = $self->param('type');
   $self->render(template => 'view',
 		type => $type,
+		artists => all_artists(),
 		components => [random_components($type, $artist)]);
 } => 'view';
 
@@ -223,8 +224,10 @@ sub all_artists {
     open(my $fh, '<:utf8', "$home/elements/$dir/README.md") or next;
     local $/ = undef;
     my $text = <$fh>;
-    if ($text =~ /\[([^]]*)\]/) {
-      $artists{$dir} = $1;
+    if ($text =~ /\[([^]]*)\]\((https?:.*)\)/) {
+      $artists{$dir} = {};
+      $artists{$dir}{name} = $1;
+      $artists{$dir}{url}  = $2;
     }
     close($fh);
   }
@@ -323,7 +326,7 @@ __DATA__
 <p>Pick the artist:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
-<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist} %><% end %>
+<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist}{name} %><% end %>
 <% } %>\
 </ul>
 <% if ($self->is_user_authenticated()) { %>
@@ -331,7 +334,7 @@ __DATA__
 Debugging:
 <ul>
 <li><%= link_to url_for(debug_artist => {artist => $self->current_user()->{username}}) => begin %>\
-<%= $artists->{$self->current_user()->{username}} %>\
+<%= $artists->{$self->current_user()->{username}}{name} %>\
 <% end %>
 </ul>
 <% } %>\
@@ -339,26 +342,26 @@ Debugging:
 @@ view.html.ep
 % layout 'default';
 % title 'Random Face';
-<h1>Random Face (<%= $artist %>/<%= $type %>)</h1>
-<p><%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.<br>
+<h1>Random Face</h1>
+<p>
+<%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.<br>
 Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.<br>
 Or switch type:
 <% for my $t (qw(man woman elf all)) {
-     next if $type eq $t;
-     $self->stash('t', $t); %>\
+     $self->stash('t', $t);
+     if ($type eq $t) { %>\
+<b><%= $t %></b>
+<%   } else { %>
 <%= link_to url_for(view => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
-<% } %>
-<% if ($type eq 'all') { %>
-<p class="text">
-You're currently looking at the <i>all</i> type. This excludes hair and chin
-because these two elements are specific pro type. In all likelyhood, these faces
-won't look all that great.
-<% } %>
+<%   }
+   } %>
 <p>
 <% my $url = $self->url_for(face => { artist=> $artist, files => join(',', @$components)}); %>\
 <a href="<%= $url %>" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
+<p>
+Images by <a href="<%= $artists->{$artist}{url} %>"><%= $artists->{$artist}{name} %></a>.
 <p>
 For demonstration purposes, you can also use this link to a
 <%= link_to url_for(random => {artist => $artist, type => $type}) => begin %>random face<% end %>.
@@ -475,6 +478,7 @@ a.download, a.edit { text-decoration: none }
 .face { height: 300px }
 .text { width: 80ex }
 .alert { padding: 1ex; background: #ffc0cb; color: #d02090; border: 2px solid #d02090 }
+.author { font-size: 80% }
 label { display: inline-block; width: 10ex }
 #logo { position: absolute; top: 0; right: 2em }
 % end
