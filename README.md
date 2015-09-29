@@ -106,8 +106,10 @@ imagemagick`).
 You can simply install it as a CGI script on your web server.
 
 If you want to edit images using the script ("Face Debugging"), you'll
-need a config file called `face.conf` in the same directory as
-`face.pl`, providing **usernames** and **passwords** as follows.
+need to add accounts to the config file. This file is called
+`face.conf` and resides in the same directory as `face.pl`, providing
+**usernames** and **passwords**. Every artist can have an account.
+
 Session information is stored in an encrypted cookie. The encryption
 for the cookie also depends on a secret, so you should also provide a
 **secret** with which the cookie will be encrypted.
@@ -125,7 +127,7 @@ for the cookie also depends on a secret, so you should also provide a
 As the [script](face.pl) is a [Mojolicious](http://mojolicio.us/) app,
 there are many other ways to deploy it. There is a
 [Cookbook](http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT)
-with a section on deployment. Here's a quick summary:
+with a section on deployment. The following is a quick summary.
 
 This runs the script as a server on
 [localhost:3000](http://localhost:3000/):
@@ -148,8 +150,11 @@ This runs the script as a server on port 8080, writing a pid file:
 hypnotoad face.pl
 ```
 
-You can configure it to listen on a different port by adding an
-additional item to the config file, `face.conf`:
+Whenever you repeat this `hypnotoad` command, the server will be
+restarted. There's no need to kill it.
+
+You can configure `hypnotoad` to listen on a different port by adding
+an additional item to the config file:
 
 ```
 {
@@ -164,15 +169,14 @@ additional item to the config file, `face.conf`:
 
 # Finding and fixing misaligned elements: the easy way
 
-If the app is started in *development* mode (such as when you use
-`morbo` to start it), then the main menu will have a new item: **Face
-Debugging**. Follow the link, pick an element type, view the gallery,
-pick an element that is misaligned and klick it. You're now on the
-Element Edit page. Click on the upper half of the image to move the
-element up by ten pixels, click on the lower half of the image to move
-the element down by ten pixels.
+If you're an artist and you're logged in, the main menu will have a
+new item: **Face Debugging**. Follow the link, pick an element type,
+view the gallery, pick an element that is misaligned and klick it.
+You're now on the Element Edit page. Click on the upper half of the
+image to move the element up by ten pixels, click on the lower half of
+the image to move the element down by ten pixels.
 
-# Finding and fixing misaligned elements: the hard way
+# Finding and fixing elements: the hard way
 
 I start the script using morbo and visit the gallery URLs with the
 debug parameter set to 1:
