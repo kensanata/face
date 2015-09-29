@@ -105,6 +105,23 @@ imagemagick`).
 
 You can simply install it as a CGI script on your web server.
 
+If you want to edit images using the script ("Face Debugging"), you'll
+need a config file called `face.conf` in the same directory as
+`face.pl`, providing **usernames** and **passwords** as follows.
+Session information is stored in an encrypted cookie. The encryption
+for the cookie also depends on a secret, so you should also provide a
+**secret** with which the cookie will be encrypted.
+
+```
+{
+  secret => '*a random string*',
+  users => {
+    'alex' => '*secret*',
+    'berta' => '*secret*',
+  },
+}
+```
+
 As the [script](face.pl) is a [Mojolicious](http://mojolicio.us/) app,
 there are many other ways to deploy it. There is a
 [Cookbook](http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT)
@@ -125,11 +142,24 @@ change it:
 morbo face.pl
 ```
 
-This runs the script as a server on
-[localhost:8082](http://localhost:8082/), writing a pid file:
+This runs the script as a server on port 8080, writing a pid file:
 
 ```
 hypnotoad face.pl
+```
+
+You can configure it to listen on a different port by adding an
+additional item to the config file, `face.conf`:
+
+```
+{
+  hypnotoad => {listen => ['http://*:8082'],},
+  secret => '*a random string*',
+  users => {
+    'alex' => '*secret*',
+    'berta' => '*secret*',
+  },
+}
 ```
 
 # Finding and fixing misaligned elements: the easy way

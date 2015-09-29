@@ -19,12 +19,31 @@ use Mojo::ByteStream;
 use Mojo::Home;
 use GD;
 
-app->config(hypnotoad => {listen => ['http://*:8082'],});
-
 # Directories to look for dictionaries.
 # Earlier directories have precedence.
 my $home = Mojo::Home->new;
 $home->detect;
+
+plugin 'Config';
+
+plugin 'authentication', {
+    autoload_user => 1,
+    load_user => sub {
+        my ($self, $username) = @_;
+        return {
+	  'username' => $username,
+	} if app->config('users')->{$username};
+        return undef;
+    },
+    validate_user => sub {
+        my ($self, $username, $password) = @_;
+	if (app->config('users')->{$username}
+	    && $password eq app->config('users')->{$username}) {
+	  return $username;
+	}
+        return undef;
+    },
+};
 
 get '/' => sub {
   my $self = shift;
@@ -144,7 +163,9 @@ get '/face/edit/:artist/#component' => sub {
 
 get '/face/move/:artist/#component/:dir' => sub {
   my $self = shift;
-  die unless $self->app->mode eq 'development';
+  if (not $self->is_user_authenticated()) {
+    return $self->redirect_to('login');
+  }
   my $artist = $self->param('artist');
   my $component = $self->param('component');
   my $dir = $self->param('dir');
@@ -153,6 +174,33 @@ get '/face/move/:artist/#component/:dir' => sub {
   $self->render(template => 'edit',
 		components => ['empty.png', 'edit.png', $component]);
 } => 'move';
+
+any "/face/login" => sub {
+  my $self = shift;
+  my $username = $self->param('username');
+  my $password = $self->param('password');
+  if ($username) {
+    $self->authenticate($username, $password);
+    if ($self->is_user_authenticated()) {
+      return $self->redirect_to('main');
+    } else {
+      $self->stash(login => 'wrong');
+    }
+  }
+} => 'login';
+
+get "/face/logout" => sub {
+  my $self = shift;
+  $self->logout();
+  $self->redirect_to('main');
+} => 'logout';
+
+sub member {
+  my $element = shift;
+  foreach (@_) {
+    return 1 if $element eq $_;
+  }
+}
 
 sub one {
   my $i = int(rand(scalar @_));
@@ -262,7 +310,7 @@ sub move {
   close($fh);
 }
 
-app->mode('production') if $ENV{GATEWAY_INTERFACE};
+app->secrets([app->config('secret')]) if app->config('secret');
 
 app->start;
 
@@ -278,13 +326,13 @@ __DATA__
 <li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist} %><% end %>
 <% } %>\
 </ul>
-<% if ($self->app->mode eq 'development') { %>
+<% if ($self->is_user_authenticated()) { %>
 <p>
 Debugging:
 <ul>
-<% for my $artist (sort keys %$artists) { %>\
-<li><%= link_to url_for(debug_artist => {artist => $artist}) => begin %><%= $artists->{$artist} %><% end %>
-<% } %>\
+<li><%= link_to url_for(debug_artist => {artist => $self->current_user()->{username}}) => begin %>\
+<%= $artists->{$self->current_user()->{username}} %>\
+<% end %>
 </ul>
 <% } %>\
 
@@ -388,6 +436,33 @@ five pixels.
   <area shape=poly coords="168,56,112,112,112,188,168,243" href="<%= $half_right %>" alt="Move half right">
 </map>
 
+@@ login.html.ep
+% layout 'default';
+% title 'Login';
+<h1>Login</h1>
+<% if ($self->stash('login') eq 'wrong') { %>
+<p>
+<span class="alert">Login failed. Username unknown or password wrong.</span>
+<% } %>
+%= form_for login => (enctype => 'multipart/form-data') => (method => 'POST') => begin
+%= label_for username => 'Username'
+%= text_field 'username'
+<p>
+%= label_for password => 'Password'
+%= password_field 'password'
+<p>
+%= submit_button 'Login'
+% end
+
+@@ logout.html.ep
+% layout 'default';
+% title 'Logout';
+<h1>Logout</h1>
+<p>
+You have been logged out.
+<p>
+Go back to the <%= link_to 'main menu' => 'main' %>.
+
 @@ layouts/default.html.ep
 <!DOCTYPE html>
 <html>
@@ -399,6 +474,8 @@ body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino,
 a.download, a.edit { text-decoration: none }
 .face { height: 300px }
 .text { width: 80ex }
+.alert { padding: 1ex; background: #ffc0cb; color: #d02090; border: 2px solid #d02090 }
+label { display: inline-block; width: 10ex }
 #logo { position: absolute; top: 0; right: 2em }
 % end
 <meta name="viewport" content="width=device-width">
@@ -409,6 +486,11 @@ a.download, a.edit { text-decoration: none }
 <hr>
 <p>
 All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
-<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a>&#x2003;<a href="https://github.com/kensanata/face">Source on GitHub</a>
+<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://github.com/kensanata/face">Source on GitHub</a> &nbsp;
+<% if ($self->is_user_authenticated()) { %>
+<%= link_to 'Logout' => 'logout' %>
+<% } else { %>
+<%= link_to 'Login' => 'login' %>
+<% } %>
 </body>
 </html>
