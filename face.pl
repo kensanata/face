@@ -370,8 +370,17 @@ For demonstration purposes, you can also use this link to a
 @@ gallery.html.ep
 % layout 'default';
 % title 'Face Gallery';
-<h1>Face Gallery (<%= $artist %>/<%= $type %>)</h1>
-<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
+<h1>Face Gallery</h1>
+<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.<br>
+Or switch type:
+<% for my $t (qw(man woman elf all)) {
+     $self->stash('t', $t);
+     if ($type eq $t) { %>\
+<b><%= $t %></b>
+<%   } else { %>
+<%= link_to url_for(gallery => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
+<%   }
+   } %>
 <p>
 <% for my $files (@$components) {
    my $url = $self->url_for(face => { files => join(',', @$files)}); %>
