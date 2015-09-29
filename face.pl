@@ -87,6 +87,7 @@ get '/face/gallery/:artist/:type' => sub {
   my $artist = $self->param('artist');
   my $type = $self->param('type');
   $self->render(template => 'gallery',
+		artists => all_artists(),
 		type => $type,
 		components => [map {
 		  [random_components($type, $artist, $self->param('debug'))];
@@ -370,7 +371,7 @@ For demonstration purposes, you can also use this link to a
 % layout 'default';
 % title 'Face Gallery';
 <h1>Face Gallery (<%= $artist %>/<%= $type %>)</h1>
-<p><%= link_to url_for(gallerytype => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
+<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
 <p>
 <% for my $files (@$components) {
    my $url = $self->url_for(face => { files => join(',', @$files)}); %>
@@ -378,6 +379,8 @@ For demonstration purposes, you can also use this link to a
 <img class="face" src="<%= $url %>">
 </a>
 <% } %>
+<p>
+Images by <a href="<%= $artists->{$artist}{url} %>"><%= $artists->{$artist}{name} %></a>.
 
 @@ debug.html.ep
 % layout 'default';
