@@ -106,13 +106,16 @@ imagemagick`).
 You can simply install it as a CGI script on your web server.
 
 If you want to edit images using the script ("Face Debugging"), you'll
-need to add accounts to the config file. This file is called
-`face.conf` and resides in the same directory as `face.pl`, providing
-**usernames** and **passwords**. Every artist can have an account.
+need to add accounts to the config file. You'll have to create this
+file. The file must be called `face.conf` and it must reside in the
+same directory as `face.pl`, providing **usernames** and
+**passwords**. Every artist can have an account.
 
 Session information is stored in an encrypted cookie. The encryption
 for the cookie also depends on a secret, so you should also provide a
 **secret** with which the cookie will be encrypted.
+
+Here's an example for the config file, `face.conf`:
 
 ```
 {
