@@ -116,13 +116,24 @@ get '/face/random/:artist/:type' => sub {
 		    $type, $artist)));
 } => 'random';
 
-get '/face/face/#files' => sub {
+get '/face/redirect/:artist/:type' => sub {
+  my $self = shift;
+  my $artist = $self->param('artist');
+  my $type = $self->param('type');
+  $self->redirect_to(render => {
+    artist => $artist,
+    files  => join(',', random_components($type, $artist)), });
+} => 'redirect';
+
+get '/face/render/#files' => sub {
   my $self = shift;
   my $files = $self->param('files');
-  $self->redirect_to(face => {artist => 'alex', files => $files});
+  $self->redirect_to(face => {
+    artist => 'alex',
+    files => $files}, );
 };
 
-get '/face/face/:artist/#files' => sub {
+get '/face/render/:artist/#files' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $files = $self->param('files');
@@ -130,7 +141,7 @@ get '/face/face/:artist/#files' => sub {
 		data => render_components(
 		  $artist,
 		  split(',', $files)));
-} => 'face';
+} => 'render';
 
 get '/face/debug' => sub {
   my $self = shift;
@@ -245,16 +256,17 @@ sub all_components {
 }
 
 sub all_elements {
+  # chin after mouth (mustache hides mouth)
+  # nose after chin (mustache!)
+  # hair after ears
+  # ears after chin (if you're fat)
+  # chin after ears (for your beard) – damn!
   return qw(eyes mouth chin ears nose hair);
 }
 
 sub random_components {
   my ($type, $artist, $debug) = @_;
   $type ||= 'all';
-  # chin after mouth (mustache hides mouth)
-  # nose after chin (mustache!)
-  # hair after ears
-  # ears after chin
   my @elements = all_elements();
   push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
@@ -357,15 +369,19 @@ Or switch type:
 <%   }
    } %>
 <p>
-<% my $url = $self->url_for(face => { artist=> $artist, files => join(',', @$components)}); %>\
+<% my $url = $self->url_for(render => { artist=> $artist, files => join(',', @$components)}); %>\
 <a href="<%= $url %>" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
 <p>
 Images by <a href="<%= $artists->{$artist}{url} %>"><%= $artists->{$artist}{name} %></a>.
-<p>
+<p class="text">
 For demonstration purposes, you can also use this link to a
 <%= link_to url_for(random => {artist => $artist, type => $type}) => begin %>random face<% end %>.
+You'll get a new random face every time you reload.
+If you're writing an application that needs the <i>URL</i> to a random face, you're better using this
+<%= link_to url_for(redirect => {artist => $artist, type => $type}) => begin %>redirecting<% end %>
+link which gives you a URL to use.
 
 @@ gallery.html.ep
 % layout 'default';
@@ -383,7 +399,7 @@ Or switch type:
    } %>
 <p>
 <% for my $files (@$components) {
-   my $url = $self->url_for(face => { files => join(',', @$files)}); %>
+   my $url = $self->url_for(render => { files => join(',', @$files)}); %>
 <a href="<%= $url %>" class="download" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>
@@ -410,7 +426,7 @@ Pick an element:
 <h1>Face Debugging (<%= $artist %>/<%= $element %>)</h1>
 <p>
 <% for my $files (@$components) {
-   my $url  = $self->url_for(face => { artist => $artist, files => join(',', @$files) });
+   my $url  = $self->url_for(render => { artist => $artist, files => join(',', @$files) });
    my $edit = $self->url_for(edit => { artist => $artist, component => $files->[-1] }); %>
 <a href="<%= $edit %>" class="edit">
 <img class="face" src="<%= $url %>">
@@ -428,7 +444,7 @@ outer zones move the element by ten pixels, the inner zones move the element by
 five pixels.
 <p>
 <% my $i = 0;
-   my $url        = $self->url_for(face => { files => join(',', @$components) });
+   my $url        = $self->url_for(render => { files => join(',', @$components) });
    my $up         = $self->url_for(move => { component => $components->[-1], dir => 'up'});
    my $down       = $self->url_for(move => { component => $components->[-1], dir => 'down'});
    my $left       = $self->url_for(move => { component => $components->[-1], dir => 'left'});
