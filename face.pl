@@ -15,7 +15,6 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Mojolicious::Lite;
-use Mojo::ByteStream;
 use Mojo::Home;
 use GD;
 
