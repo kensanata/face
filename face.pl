@@ -24,7 +24,7 @@ use GD;
 my $home = Mojo::Home->new;
 $home->detect;
 
-plugin 'Config';
+plugin 'Config' => {default => {users => {}}};
 
 plugin 'authentication', {
     autoload_user => 1,
