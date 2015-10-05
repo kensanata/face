@@ -43,60 +43,56 @@ sub png_images_ok {
 }
 
 $t->get_ok('/')
-    ->status_is(302)
-    ->header_is(Location => '/face');
-
-$t->get_ok('/face')
     ->status_is(200)
     ->text_is('h1' => 'Faces for your RPG Characters')
     # alex
-    ->element_exists('li a[href="/face/view/alex/woman"]')
+    ->element_exists('li a[href="/view/alex/woman"]')
     # but not debugging alex
-    ->element_exists_not('li a[href="/face/debug/alex"]');
+    ->element_exists_not('li a[href="/debug/alex"]');
 
 # set up an account in the config file
 $t->app->config('users')->{alex} = '*secret*';
 
 # failed login to access debug mode
-$t->post_ok('/face/login' => form =>  {
+$t->post_ok('/login' => form =>  {
   username => 'alex',
   password => 'fnork' })
     ->status_is(200)
     ->content_like(qr/login failed/i)
-    ->element_exists_not('li a[href="/face/debug/alex"]');
+    ->element_exists_not('li a[href="/debug/alex"]');
 
 # successful login redirects to the main page
-$t->post_ok('/face/login' => form =>  {
+$t->post_ok('/login' => form =>  {
   username => 'alex',
   password => '*secret*' })
     ->status_is(302)
-    ->header_is(Location => '/face');
+    ->header_is(Location => '/');
 
 # debugging alex works, now
-$t->get_ok('/face/')
-    ->element_exists('li a[href="/face/debug/alex"]');
+$t->get_ok('/')
+    ->element_exists('li a[href="/debug/alex"]');
 
-$t->get_ok('/face/view')
+$t->get_ok('/view')
     ->status_is(302)
-    ->header_is(Location => '/face/view/alex/woman');
+    ->header_is(Location => '/view/alex/woman');
 
-$t->get_ok('/face/gallery')
+$t->get_ok('/gallery')
     ->status_is(302)
-    ->header_is(Location => '/face/gallery/alex/man');
+    ->header_is(Location => '/gallery/alex/man');
 
-$t->get_ok('/face/gallery/man')
+$t->get_ok('/gallery/man')
     ->status_is(302)
-    ->header_is(Location => '/face/gallery/alex/man');
+    ->header_is(Location => '/gallery/alex/man');
 
-$t->get_ok('/face/random')
+$t->get_ok('/random')
     ->status_is(302)
-    ->header_is(Location => '/face/random/alex/woman');
+    ->header_is(Location => '/random/alex/woman');
 
-$t->get_ok('/face/random/woman')
+$t->get_ok('/random/woman')
     ->status_is(302)
-    ->header_is(Location => '/face/random/alex/woman');
+    ->header_is(Location => '/random/alex/woman');
 
-$t->get_ok('/face/random/alex/woman')
+$t->get_ok('/random/alex/woman')
     ->status_is(200)
     ->header_is('Content-Type' => 'image/png');
 
@@ -104,15 +100,15 @@ $t->get_ok('/face/random/alex/woman')
     for my $artist (qw(alex)) {
       for my $type (qw(all man woman elf)) {
 	
-	$t->get_ok("/face/view/$artist/$type")
+	$t->get_ok("/view/$artist/$type")
 	    ->status_is(200)
-	    ->text_is('h1' => "Random Face ($artist/$type)")
+	    ->text_is('h1' => "Random Face")
 	    # Gallery
-	    ->element_exists("a[href='/face/gallery/$artist/$type']")
+	    ->element_exists("a[href='/gallery/$artist/$type']")
 	    # For demonstration purposes...
-	    ->element_exists("a[href='/face/random/$artist/$type']")
+	    ->element_exists("a[href='/random/$artist/$type']")
 	    # The image link itself
-	    ->element_exists("a img[src^='/face/face/$artist/']");
+	    ->element_exists("a img[src^='/render/$artist/']");
 	
 	my $url = $t->tx->res->dom->at('img')->attr('src');
 	
@@ -120,9 +116,9 @@ $t->get_ok('/face/random/alex/woman')
 	    ->status_is(200)
 	    ->header_is('Content-Type' => 'image/png');
 	
-	$t->get_ok("/face/gallery/$artist/$type")
+	$t->get_ok("/gallery/$artist/$type")
 	    ->status_is(200)
-	    ->text_is('h1' => "Face Gallery ($artist/$type)");
+	    ->text_is('h1' => "Face Gallery");
 	
 	png_images_ok($t->tx->res->dom->find('img'));
 	
@@ -133,11 +129,11 @@ $t->get_ok('/face/random/alex/woman')
       }
 }
 
-$t->get_ok('/face/debug/alex')
+$t->get_ok('/debug/alex')
     ->status_is(200);
 
 for my $element (all_elements()) {
-  $t->element_exists("li a[href='/face/debug/alex/$element']");
+  $t->element_exists("li a[href='/debug/alex/$element']");
 }
 
 if ($ENV{QUICK_TEST}) {
@@ -145,7 +141,7 @@ if ($ENV{QUICK_TEST}) {
 } else {
   for my $element (all_elements()) {
     
-    $t->get_ok("/face/debug/alex/$element")
+    $t->get_ok("/debug/alex/$element")
 	->status_is(200);
 
     png_images_ok($t->tx->res->dom->find('img'));
@@ -164,7 +160,7 @@ open(my $fh, '>:raw', $file);
 print $fh $image->png();
 close($fh);
 
-$t->get_ok("/face/debug/alex/test");
+$t->get_ok("/debug/alex/test");
 my $url = $t->tx->res->dom->at('a.edit')->attr('href');
 $t->get_ok($url)
     ->status_is(200)

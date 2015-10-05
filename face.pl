@@ -46,21 +46,16 @@ plugin 'authentication', {
 
 get '/' => sub {
   my $self = shift;
-  $self->redirect_to('main');
-};
-
-get '/face' => sub {
-  my $self = shift;
   $self->render(template => 'index',
 		artists => all_artists());
 } => 'main';
 
-get '/face/view' => sub {
+get '/view' => sub {
   my $self = shift;
   $self->redirect_to(view => {artist => 'alex', type => 'woman'});
 };
 
-get '/face/view/:artist/:type' => sub {
+get '/view/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -70,18 +65,18 @@ get '/face/view/:artist/:type' => sub {
 		components => [random_components($type, $artist)]);
 } => 'view';
 
-get '/face/gallery' => sub {
+get '/gallery' => sub {
   my $self = shift;
   $self->redirect_to(gallery => {artist => 'alex', type => 'man'});
 };
 
-get '/face/gallery/:type' => sub {
+get '/gallery/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
   $self->redirect_to(gallery => {artist => 'alex', type => $type});
 };
 
-get '/face/gallery/:artist/:type' => sub {
+get '/gallery/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -93,18 +88,18 @@ get '/face/gallery/:artist/:type' => sub {
 			       } 1..10]);
 } => 'gallery';
 
-get '/face/random' => sub {
+get '/random' => sub {
   my $self = shift;
   $self->redirect_to(random => {artist => 'alex', type => 'woman'});
 };
 
-get '/face/random/:type' => sub {
+get '/random/:type' => sub {
   my $self = shift;
   my $type = $self->param('type');
   $self->redirect_to(random => {artist => 'alex', type => $type});
 };
 
-get '/face/random/:artist/:type' => sub {
+get '/random/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -115,7 +110,7 @@ get '/face/random/:artist/:type' => sub {
 		    $type, $artist)));
 } => 'random';
 
-get '/face/redirect/:artist/:type' => sub {
+get '/redirect/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
@@ -124,7 +119,7 @@ get '/face/redirect/:artist/:type' => sub {
     files  => join(',', random_components($type, $artist)), });
 } => 'redirect';
 
-get '/face/render/#files' => sub {
+get '/render/#files' => sub {
   my $self = shift;
   my $files = $self->param('files');
   $self->redirect_to(face => {
@@ -132,7 +127,7 @@ get '/face/render/#files' => sub {
     files => $files}, );
 };
 
-get '/face/render/:artist/#files' => sub {
+get '/render/:artist/#files' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $files = $self->param('files');
@@ -142,13 +137,13 @@ get '/face/render/:artist/#files' => sub {
 		  split(',', $files)));
 } => 'render';
 
-get '/face/debug' => sub {
+get '/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
 		elements => [all_elements()]);
 } => 'debug';
 
-get '/face/debug/:artist' => sub {
+get '/debug/:artist' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   $self->render(template => 'debug',
@@ -156,7 +151,7 @@ get '/face/debug/:artist' => sub {
 		elements => [all_elements()]);
 } => 'debug_artist';
 
-get '/face/debug/:artist/:element' => sub {
+get '/debug/:artist/:element' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $element = $self->param('element');
@@ -166,14 +161,14 @@ get '/face/debug/:artist/:element' => sub {
 		components => [all_components($artist, $element)]);
 } => 'debug_element';
 
-get '/face/edit/:artist/#component' => sub {
+get '/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
   $self->render(template => 'edit',
 		components => ['empty.png', 'edit.png', $component]);
 } => 'edit';
 
-get '/face/move/:artist/#component/:dir' => sub {
+get '/move/:artist/#component/:dir' => sub {
   my $self = shift;
   if (not $self->is_user_authenticated()) {
     return $self->redirect_to('login');
@@ -187,7 +182,7 @@ get '/face/move/:artist/#component/:dir' => sub {
 		components => ['empty.png', 'edit.png', $component]);
 } => 'move';
 
-any "/face/login" => sub {
+any "/login" => sub {
   my $self = shift;
   my $username = $self->param('username');
   my $password = $self->param('password');
@@ -201,7 +196,7 @@ any "/face/login" => sub {
   }
 } => 'login';
 
-get "/face/logout" => sub {
+get "/logout" => sub {
   my $self = shift;
   $self->logout();
   $self->redirect_to('main');
@@ -498,7 +493,7 @@ Go back to the <%= link_to 'main menu' => 'main' %>.
 <html>
 <head>
 <title><%= title %></title>
-%= stylesheet '/face/face.css'
+%= stylesheet '/face.css'
 %= stylesheet begin
 body { padding: 1em; font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif }
 a.download, a.edit { text-decoration: none }
