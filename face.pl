@@ -502,16 +502,15 @@ a.download, a.edit { text-decoration: none }
 .alert { padding: 1ex; background: #ffc0cb; color: #d02090; border: 2px solid #d02090 }
 .author { font-size: 80% }
 label { display: inline-block; width: 10ex }
-#logo { position: absolute; top: 0; right: 2em }
 % end
 <meta name="viewport" content="width=device-width">
 </head>
 <body>
-<p id="logo"><%= link_to 'Faces' => 'main' %></p>
 <%= content %>
 <hr>
 <p>
 All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
+<%= link_to 'Faces' => 'main' %> &nbsp;
 <a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://github.com/kensanata/face">Source on GitHub</a> &nbsp;
 <% if ($self->is_user_authenticated()) { %>
 <%= link_to 'Logout' => 'logout' %>
