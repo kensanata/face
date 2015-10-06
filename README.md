@@ -87,12 +87,14 @@ a similar resource.
    provide the element for every row. If the remaining rows are all
    the same element, you don't need to repeat it. Thus, if you've
    drawn a sheet full of eyes, just use `perl helpers/cutter.pl
-   source4.png alex eyes_all` and you're good.
+   source4.png alex eyes_all` and you're good. Make sure you use
+   `_all` in the filename. That's how the system knows the face
+   element can be used for all types of faces.
 
 6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
-   example, rename it from `chin_1.png` to `chin_male_1.png` or if you
-   have ears that are fit for elves only, rename it from `ears_2.png`
+   example, rename it from `chin_all_1.png` to `chin_man_1.png` or if you
+   have ears that are fit for elves only, rename it from `ears_all_2.png`
    to `ears_elf_2.png`.
 
 # Dependencies
