@@ -255,14 +255,14 @@ sub all_elements {
   # hair after ears
   # ears after chin (if you're fat)
   # chin after ears (for your beard) – damn!
-  return qw(eyes mouth chin ears nose hair);
+  return qw(eyes mouth chin ears nose extra hair);
 }
 
 sub random_components {
   my ($type, $artist, $debug) = @_;
   $type ||= 'all';
   my @elements = all_elements();
-  push(@elements, 'extra') if rand(1) < 0.1; # 10% chance
+  @elements = grep(!/extra/, @elements) if rand(1) >= 0.1; # 10% chance
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
