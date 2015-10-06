@@ -226,6 +226,7 @@ sub all_artists {
   } readdir($dh);
   closedir $dh;
   for my $dir (@dirs) {
+    # Determine name and url from the README file.
     $artists{$dir} = $dir; # default
     open(my $fh, '<:utf8', "$home/elements/$dir/README.md") or next;
     local $/ = undef;
@@ -236,6 +237,14 @@ sub all_artists {
       $artists{$dir}{url}  = $2;
     }
     close($fh);
+    # Find available types from the filenames.
+    my %types;
+    opendir(my $dh, "$home/elements/$dir") || die "Can't open elements: $!";
+    while(readdir $dh) {
+      $types{$1} = 1 if /_([a-z]+)/;
+    }
+    closedir $dh;
+    $artists{$dir}{types}  = [sort keys %types];
   }
   return \%artists;
 }
@@ -333,7 +342,7 @@ __DATA__
 <p>Pick an artist:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
-<li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist}{name} %><% end %>
+<li><%= link_to url_for(view => {artist => $artist, type => $artists->{$artist}->{types}->[-1]}) => begin %><%= $artists->{$artist}{name} %><% end %>
 <% } %>\
 </ul>
 <% if ($self->is_user_authenticated()) { %>
@@ -355,9 +364,10 @@ Would you like to see your name on this list? Check out our
 <h1>Random Face</h1>
 <p>
 <%= link_to url_for(view => {type => "$type"}) => begin %>Reload<% end %> the page to get a different face.<br>
-Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.<br>
-Or switch type:
-<% for my $t (qw(man woman elf all)) {
+Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.
+<% if (@{$artists->{$artist}->{types}} > 1) { =%>
+<br>Or switch type:
+<% for my $t (@{$artists->{$artist}->{types}}) {
      $self->stash('t', $t);
      if ($type eq $t) { %>\
 <b><%= $t %></b>
@@ -365,6 +375,7 @@ Or switch type:
 <%= link_to url_for(view => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
 <%   }
    } %>
+<% } =%>
 <p>
 <% my $url = $self->url_for(render => { artist=> $artist, files => join(',', @$components)}); %>\
 <a href="<%= $url %>" download="random.png">
@@ -384,19 +395,21 @@ link which gives you a URL to use.
 % layout 'default';
 % title 'Face Gallery';
 <h1>Face Gallery</h1>
-<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.<br>
-Or switch type:
-<% for my $t (qw(man woman elf all)) {
+<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
+<% if (@{$artists->{$artist}->{types}} > 1) { =%>
+<br>Or switch type:
+<% for my $t (@{$artists->{$artist}->{types}}) {
      $self->stash('t', $t);
-     if ($type eq $t) { %>\
+     if ($type eq $t) { =%>\
 <b><%= $t %></b>
-<%   } else { %>
+<%   } else { =%>
 <%= link_to url_for(gallery => {artist => "$artist", type => "$t"})   => begin %><%= $t %><% end %>
 <%   }
    } %>
+<% } =%>
 <p>
 <% for my $files (@$components) {
-   my $url = $self->url_for(render => { files => join(',', @$files)}); %>
+   my $url = $self->url_for(render => { files => join(',', @$files)}); =%>
 <a href="<%= $url %>" class="download" download="random.png">
 <img class="face" src="<%= $url %>">
 </a>

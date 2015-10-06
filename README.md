@@ -27,7 +27,7 @@ If we're requesting an element of a particular type and no such
 element exists, we'll take any element with type "all". Thus, if we're
 going to request elf ears, we'll get `ears_elf_2.png`. If we request
 dwarf ears and there are no special dwarf ears, we might get
-`ears_all_1.png`, for example.
+`ears_all_1.png`.
 
 If we're don't determine a type, this is equivalent to asking for the
 "all" type. We might get `ears_all_1.png` but we won't get
@@ -93,9 +93,9 @@ a similar resource.
 
 6. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
-   example, rename it from `chin_all_1.png` to `chin_man_1.png` or if you
-   have ears that are fit for elves only, rename it from `ears_all_2.png`
-   to `ears_elf_2.png`.
+   example, rename it from `chin_all_1.png` to `chin_man_1.png` or if
+   you have ears that are fit for elves only, rename it from
+   `ears_all_2.png` to `ears_elf_2.png`.
 
 # Dependencies
 
