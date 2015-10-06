@@ -330,7 +330,7 @@ __DATA__
 % layout 'default';
 % title 'Faces';
 <h1>Faces for your RPG Characters</h1>
-<p>Pick the artist:
+<p>Pick an artist:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
 <li><%= link_to url_for(view => {artist => $artist, type => 'woman'}) => begin %><%= $artists->{$artist}{name} %><% end %>
@@ -344,7 +344,10 @@ Debugging:
 <%= $artists->{$self->current_user()->{username}}{name} %>\
 <% end %>
 </ul>
-<% } %>\
+<% } %>
+<p>
+Would you like to see your name on this list? Check out our
+<a href="https://github.com/kensanata/face#adding-elements">tutorial</a>.
 
 @@ view.html.ep
 % layout 'default';

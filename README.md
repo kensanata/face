@@ -55,14 +55,18 @@ a similar resource.
 2. Use a blue fountain pen to draw a row of eyes, a row of noses, a
    row of mouths (maybe with mustaches), a row of hair (maybe with
    hats), and a row of ears or chins (maybe with beards). Or just draw
-   a sheet with just one element. Fifty components (two sheets) per
-   element seems to be a good starting point.
+   sheet with just one element each. Fifty components (two sheets) per
+   element seems to be a good starting point. If you're happy with
+   dedicating your sheets to the
+   [public domain](https://creativecommons.org/publicdomain/zero/1.0/),
+   then you can send your sheets to
+   [Alex Schroeder](mailto:kensanata@gmail.com) right away. Alex will
+   do the rest.
 
 3. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
-   The result should be an image more or less 5 × 450 = 2250 pixels
-   wide and 5 × 600 = 3000 pixels high. Rescale the image if
-   necessary. Examples
+   The result must be an image 2250 pixels wide and 3000 pixels high.
+   Rescale the image if necessary. Check out the examples
    [on Flickr](https://www.flickr.com/search/?user_id=80148151%40N00&sort=date-taken-desc&advanced=1&tags=rpg%20face%20generator&view_all=1).
 
 4. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
