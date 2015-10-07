@@ -280,7 +280,9 @@ sub random_components {
     my @candidates1 = grep(/^${element}_/, @files);
     my @candidates2 = grep(/_${type}/, @candidates1) if $type;
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
-    one(@candidates2) || '';
+    my $candidate = one(@candidates2) || '';
+    $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
+    $candidate;
   } @elements;
   unshift(@elements, 'empty.png') if $debug;
   return @components;
@@ -296,6 +298,10 @@ sub render_components {
     my $layer;
     if ($component eq 'empty.png' or $component eq 'edit.png') {
       $layer = GD::Image->new("$home/elements/$component");
+    } elsif (substr($component, -1) eq '_') {
+      $component = substr($component, 0, -1);
+      $layer = GD::Image->new("$home/elements/$artist/$component");
+      $layer->flipHorizontal();
     } else {
       $layer = GD::Image->new("$home/elements/$artist/$component");
     }
