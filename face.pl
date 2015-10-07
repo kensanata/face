@@ -155,17 +155,23 @@ get '/debug/:artist/:element' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $element = $self->param('element');
+  my $empty = $self->param('empty');
   $self->render(template => 'debugelement',
 		artist => $artist,
 		element => $element,
-		components => [all_components($artist, $element)]);
+		empty => $empty,
+		components => [all_components($artist,
+					      $element,
+					      $empty)]);
 } => 'debug_element';
 
 get '/edit/:artist/#component' => sub {
   my $self = shift;
   my $component = $self->param('component');
+  my $empty = $self->param('empty');
   $self->render(template => 'edit',
-		components => ['empty.png', 'edit.png', $component]);
+		empty => $empty,
+		components => [$empty, 'edit.png', $component]);
 } => 'edit';
 
 get '/move/:artist/#component/:dir' => sub {
@@ -177,9 +183,11 @@ get '/move/:artist/#component/:dir' => sub {
   my $component = $self->param('component');
   my $dir = $self->param('dir');
   my $step = $self->param('step') || 10;
+  my $empty = $self->param('empty');
   move($artist, $component, $dir, $step);
   $self->render(template => 'edit',
-		components => ['empty.png', 'edit.png', $component]);
+		empty => $empty,
+		components => [$empty||'empty.png', 'edit.png', $component]);
 } => 'move';
 
 any "/login" => sub {
@@ -250,11 +258,12 @@ sub all_artists {
 }
 
 sub all_components {
-  my ($artist, $element) = @_;
+  my ($artist, $element, $empty) = @_;
+  $empty ||= 'empty.png';
   opendir(my $dh, "$home/elements/$artist") || die "Can't open $home/elements/$artist: $!";
   my @files = grep { /$element.*\.png$/ } readdir($dh);
   closedir $dh;
-  my @components = map { ['empty.png', $_] } @files;
+  my @components = map { [$empty, $_] } @files;
   return @components;
 }
 
@@ -296,7 +305,7 @@ sub render_components {
   for my $component (@components) {
     next unless $component;
     my $layer;
-    if ($component eq 'empty.png' or $component eq 'edit.png') {
+    if (-f "$home/elements/$component") {
       $layer = GD::Image->new("$home/elements/$component");
     } elsif (substr($component, -1) eq '_') {
       $component = substr($component, 0, -1);
@@ -443,7 +452,8 @@ Pick an element:
 <p>
 <% for my $files (@$components) {
    my $url  = $self->url_for(render => { artist => $artist, files => join(',', @$files) });
-   my $edit = $self->url_for(edit => { artist => $artist, component => $files->[-1] }); %>
+   my $edit = $self->url_for(edit => { artist => $artist, component => $files->[-1] });
+   $edit = $edit->query(empty => $empty) if $empty; %>
 <a href="<%= $edit %>" class="edit">
 <img class="face" src="<%= $url %>">
 </a>
@@ -469,6 +479,11 @@ five pixels.
    my $half_down  = $self->url_for(move => { component => $components->[-1], dir => 'down'})->query(step => 5);
    my $half_left  = $self->url_for(move => { component => $components->[-1], dir => 'left'})->query(step => 5);
    my $half_right = $self->url_for(move => { component => $components->[-1], dir => 'right'})->query(step => 5);
+   if ($empty) {
+     for my $var (\$up, \$down, \$left, \$right, \$half_up, \$half_down, \$half_left, \$half_right) {
+       $$var = $$var->query({empty => $empty});
+     }
+   }
    $i++; %>
 
 <img class="debug face" usemap="#map" src="<%= $url %>">
