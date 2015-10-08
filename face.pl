@@ -294,7 +294,7 @@ sub random_components {
     $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
     push(@components, $candidate) if $candidate;
   }
-  unshift(@elements, 'empty.png') if $debug;
+  unshift(@components, 'empty.png') if $debug;
   return @components;
 }
 
