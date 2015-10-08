@@ -171,7 +171,7 @@ get '/edit/:artist/#component' => sub {
   my $empty = $self->param('empty');
   $self->render(template => 'edit',
 		empty => $empty,
-		components => [$empty, 'edit.png', $component]);
+		components => [$empty||'empty.png', 'edit.png', $component]);
 } => 'edit';
 
 get '/move/:artist/#component/:dir' => sub {
