@@ -268,12 +268,13 @@ sub all_components {
 }
 
 sub all_elements {
+  # face is the background, if any (mostly to support photos)
   # chin after mouth (mustache hides mouth)
   # nose after chin (mustache!)
   # hair after ears
   # ears after chin (if you're fat)
   # chin after ears (for your beard) – damn!
-  return qw(eyes mouth chin ears nose extra hair);
+  return qw(face eyes mouth chin ears nose extra hair);
 }
 
 sub random_components {
@@ -284,15 +285,15 @@ sub random_components {
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
-  my @components = map {
-    my $element = $_; # inside grep $_ points to a file
+  my @components;
+  for my $element (@elements) {
     my @candidates1 = grep(/^${element}_/, @files);
     my @candidates2 = grep(/_${type}/, @candidates1) if $type;
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     my $candidate = one(@candidates2) || '';
     $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
-    $candidate;
-  } @elements;
+    push(@components, $candidate) if $candidate;
+  }
   unshift(@elements, 'empty.png') if $debug;
   return @components;
 }
