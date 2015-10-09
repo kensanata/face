@@ -18,8 +18,6 @@ use Mojolicious::Lite;
 use Mojo::Home;
 use GD;
 
-# Directories to look for dictionaries.
-# Earlier directories have precedence.
 my $home = Mojo::Home->new;
 $home->detect;
 
