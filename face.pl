@@ -229,11 +229,12 @@ sub all_artists {
     !/\.png$/ # ignore images
 	&& substr($_, 0, 1) ne '.' # ignore "." and ".." and other "hidden files"
 	&& -d "$home/elements/$_"
+	&& -f "$home/elements/$_/README.md"
   } readdir($dh);
   closedir $dh;
   for my $dir (@dirs) {
     # Determine name and url from the README file.
-    $artists{$dir} = $dir; # default
+    $artists{$dir}{name} = $dir; # default
     open(my $fh, '<:utf8', "$home/elements/$dir/README.md") or next;
     local $/ = undef;
     my $text = <$fh>;
@@ -335,6 +336,12 @@ sub move {
     $image->copy($original, 0, 0, $step, 0, $image->width - $step, $image->height);
   } elsif ($dir eq 'right') {
     $image->copy($original, $step, 0, 0, 0, $image->width - $step, $image->height);
+  } elsif ($dir eq 'appart') {
+    $image->copy($original, $image->width/2 + $step/2, 0, $image->width/2, 0, $image->width/2 - $step/2, $image->height);
+    $image->copy($original, 0, 0, $step/2, 0, $image->width/2 - $step/2, $image->height);
+  } elsif ($dir eq 'closer') {
+    $image->copy($original, $step/2, 0, 0, 0, $image->width/2 - $step/2, $image->height);
+    $image->copy($original, $image->width/2, 0, $image->width/2 + $step/2, 0, $image->width/2 - $step/2, $image->height);
   } else {
     die "Unknown direction: $dir\n";
   }
@@ -478,8 +485,10 @@ five pixels.
    my $half_down  = $self->url_for(move => { component => $components->[-1], dir => 'down'})->query(step => 5);
    my $half_left  = $self->url_for(move => { component => $components->[-1], dir => 'left'})->query(step => 5);
    my $half_right = $self->url_for(move => { component => $components->[-1], dir => 'right'})->query(step => 5);
+   my $appart     = $self->url_for(move => { component => $components->[-1], dir => 'appart'});
+   my $closer     = $self->url_for(move => { component => $components->[-1], dir => 'closer'});
    if ($empty) {
-     for my $var (\$up, \$down, \$left, \$right, \$half_up, \$half_down, \$half_left, \$half_right) {
+     for my $var (\$up, \$down, \$left, \$right, \$half_up, \$half_down, \$half_left, \$half_right, \$appart, \$closer) {
        $$var = $$var->query({empty => $empty});
      }
    }
@@ -491,10 +500,12 @@ five pixels.
   <area shape=poly coords="0,299,56,243,168,243,224,299" href="<%= $down %>" alt="Move down">
   <area shape=poly coords="0,0,56,56,56,243,0,299" href="<%= $left %>" alt="Move left">
   <area shape=poly coords="224,0,168,56,168,243,224,299" href="<%= $right %>" alt="Move right">
-  <area shape=poly coords="56,56,112,112,168,56" href="<%= $half_up %>" alt="Move half up">
-  <area shape=poly coords="56,243,112,188,168,243" href="<%= $half_down %>" alt="Move half down">
-  <area shape=poly coords="56,56,112,112,112,188,56,243" href="<%= $half_left %>" alt="Move half left">
-  <area shape=poly coords="168,56,112,112,112,188,168,243" href="<%= $half_right %>" alt="Move half right">
+  <area shape=poly coords="56,56,103,103,122,103,168,56" href="<%= $half_up %>" alt="Move half up">
+  <area shape=poly coords="56,243,103,197,122,197,168,243" href="<%= $half_down %>" alt="Move half down">
+  <area shape=poly coords="56,56,103,103,103,197,56,243" href="<%= $half_left %>" alt="Move half left">
+  <area shape=poly coords="168,56,122,103,122,197,168,243" href="<%= $half_right %>" alt="Move half right">
+  <area shape=rect coords="104,104,112,196" href="<%= $appart %>" alt="Move appart">
+  <area shape=rect coords="113,104,121,196" href="<%= $closer %>" alt="Move together">
 </map>
 
 @@ login.html.ep
