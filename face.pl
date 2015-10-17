@@ -251,6 +251,7 @@ sub all_artists {
       $types{$1} = 1 if /_([a-z]+)/;
     }
     closedir $dh;
+    delete $types{all} if $types{all} and keys %types > 1;
     $artists{$dir}{types}  = [sort keys %types];
   }
   return \%artists;
