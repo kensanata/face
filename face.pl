@@ -78,12 +78,13 @@ get '/gallery/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
+  my $num = $self->param('number') || 20;
   $self->render(template => 'gallery',
 		artists => all_artists(),
 		type => $type,
 		components => [map {
 		  [random_components($type, $artist, $self->param('debug'))];
-			       } 1..10]);
+			       } 1..$num]);
 } => 'gallery';
 
 get '/random' => sub {
@@ -279,7 +280,7 @@ sub all_elements {
 
 sub random_components {
   my ($type, $artist, $debug) = @_;
-  $type ||= 'all';
+  $type = one(@{$artists{$artist}->{types}}) if $type eq 'random';
   my @elements = all_elements();
   @elements = grep(!/extra/, @elements) if rand(1) >= 0.1; # 10% chance
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
@@ -288,7 +289,7 @@ sub random_components {
   my @components;
   for my $element (@elements) {
     my @candidates1 = grep(/^${element}_/, @files);
-    my @candidates2 = grep(/_${type}/, @candidates1) if $type;
+    my @candidates2 = grep(/_$type/, @candidates1);
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     my $candidate = one(@candidates2) || '';
     $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
@@ -417,10 +418,12 @@ link which gives you a URL to use.
 % layout 'default';
 % title 'Face Gallery';
 <h1>Face Gallery</h1>
-<p><%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
-<% if (@{$artists->{$artist}->{types}} > 1) { =%>
+<p class="text">
+<%= link_to url_for(gallery => {type => "$type"}) => begin %>Reload<% end %> the page to get a different gallery.
+<% if (@{$artists->{$artist}->{types}} > 1) {
+     my @list = (@{$artists->{$artist}->{types}}, 'random'); =%>
 <br>Or switch type:
-<% for my $t (@{$artists->{$artist}->{types}}) {
+<% for my $t (@list) {
      $self->stash('t', $t);
      if ($type eq $t) { =%>\
 <b><%= $t %></b>
@@ -432,11 +435,11 @@ link which gives you a URL to use.
 <p>
 <% for my $files (@$components) {
    my $url = $self->url_for(render => { files => join(',', @$files)}); =%>
-<a href="<%= $url %>" class="download" download="random.png">
-<img class="face" src="<%= $url %>">
-</a>
+<a href="<%= $url %>" class="download" download="random.png">\
+<img class="face" src="<%= $url %>">\
+</a>\
 <% } %>
-<p>
+<p class="text">
 Images by <a href="<%= $artists->{$artist}{url} %>"><%= $artists->{$artist}{name} %></a>.
 
 @@ debug.html.ep
@@ -550,11 +553,16 @@ a.download, a.edit { text-decoration: none }
 .alert { padding: 1ex; background: #ffc0cb; color: #d02090; border: 2px solid #d02090 }
 .author { font-size: 80% }
 label { display: inline-block; width: 10ex }
+@media print {
+  .face { height: 1.8in }
+  h1, .text, .footer { display: none }
+}
 % end
 <meta name="viewport" content="width=device-width">
 </head>
 <body>
 <%= content %>
+<div class="footer">
 <hr>
 <p>
 All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
@@ -565,5 +573,6 @@ All the images generated are <a href="http://creativecommons.org/publicdomain/ze
 <% } else { %>
 <%= link_to 'Login' => 'login' %>
 <% } %>
+</div>
 </body>
 </html>
