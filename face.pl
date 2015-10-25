@@ -155,13 +155,15 @@ get '/debug/:artist/:element' => sub {
   my $artist = $self->param('artist');
   my $element = $self->param('element');
   my $empty = $self->param('empty');
+  my $days = $self->param('days');
   $self->render(template => 'debugelement',
 		artist => $artist,
 		element => $element,
 		empty => $empty,
 		components => [all_components($artist,
 					      $element,
-					      $empty)]);
+					      $empty,
+					      $days)]);
 } => 'debug_element';
 
 get '/edit/:artist/#component' => sub {
@@ -259,10 +261,14 @@ sub all_artists {
 }
 
 sub all_components {
-  my ($artist, $element, $empty) = @_;
+  my ($artist, $element, $empty, $days) = @_;
   $empty ||= 'empty.png';
-  opendir(my $dh, "$home/elements/$artist") || die "Can't open $home/elements/$artist: $!";
-  my @files = grep { /$element.*\.png$/ } readdir($dh);
+  opendir(my $dh, "$home/elements/$artist")
+      || die "Can't open $home/elements/$artist: $!";
+  my @files = grep { /$element.*\.png$/
+		     and (not $days
+			  or (stat("$home/elements/$artist/$_"))[9]
+			      >= (time - $days*24*60*60)) } readdir($dh);
   closedir $dh;
   my @components = map { [$empty, $_] } @files;
   return @components;
