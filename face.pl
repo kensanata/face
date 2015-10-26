@@ -150,7 +150,7 @@ get '/debug/:artist' => sub {
 		elements => [all_elements()]);
 } => 'debug_artist';
 
-get '/debug/:artist/:element' => sub {
+get '/debug/:artist/#element' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $element = $self->param('element');
