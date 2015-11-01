@@ -288,7 +288,8 @@ sub random_components {
   my ($type, $artist, $debug) = @_;
   $type = one(@{$artists{$artist}->{types}}) if $type eq 'random';
   my @elements = all_elements();
-  @elements = grep(!/extra/, @elements) if rand(1) >= 0.1; # 10% chance
+  @elements = grep(!/^extra/, @elements) if rand(1) >= 0.1; # 10% chance
+  @elements = grep(!/^hat/, @elements) if rand(1) >= 0.1; # 10% chance
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
