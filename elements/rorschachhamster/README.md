@@ -12,3 +12,7 @@ The other images are taken from the following books:
   Regula derer man sich als einer Anleidung zu berühmter Küstlere
   Zeichen-Wercken bestens bedienen kan." von Johann Daniel Preißler,
   gibt es als Digitalisat bei der Universitätsbibliothek Heidelberg
+
+* "Dissertation sur un traité de Charles Le Brun, concernant le
+  rapport de la physionomie humaine avec celle des animaux" in einem
+  PDF von der Université de Strassbourg
