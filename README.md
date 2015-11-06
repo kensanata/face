@@ -74,8 +74,11 @@ a similar resource.
    tintenblau.png scan1.jpg source1.png` – this forces the image to
    use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
    We're also moving from JPG (which is what your scanner probably
-   produced) to PNG. Don't worry about transparency: *white* is
-   considered to be *transparent* when merging the various elements.
+   produced) to PNG. As for transparency: If your PNG file has
+   transparency (an alpha channel), then it will work as intended. If
+   you don't (because you're converting a JPG to a PNG as you did just
+   now) then *white* is considered to be *transparent* when merging
+   the various elements.
 
 5. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
    It cuts the scan into 5 × 5 images of 450 × 600 pixels each and
@@ -258,3 +261,28 @@ level. I'll suggest the following comand line: `convert -blur 0x1
 +dither -level 50%,80% -grayscale rec709luma scan1.jpg source1.png`.
 Now anything below 50% is black. I also converted it to grayscale at
 the end because the very light pixles seemed to have random colors.
+
+# Transparency and Opacity
+
+Sometimes you want white to be opaque. You would like to have hair
+that covers a face, or a hat that covers the face. One solution is to
+use *nearly white*. It's hard to work with, however. When you open the
+element in Gimp, you can't tell which sectinos are white and which
+ones are nearly white. In this case, use transparency. In Gimp:
+
+1. Layer → Transparency → Add Alpha Channel
+2. Choose the magic wand using `u`
+3. Set the tool options to *no* antialiasing and use a threshold of 0.0
+4. Select the white background with a click and cut it away (Edit → Cut)
+5. Any remaining white will remain opaque, which is probably OK
+
+Now you're ready to change some light colors to white, if you want to.
+
+There's a little helper script to identify transparent images, if you
+need it.
+
+Example usage:
+
+```
+helpers/transparent.pl elements/rorschachhamster/*.png
+```

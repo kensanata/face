@@ -323,8 +323,10 @@ sub render_components {
     } else {
       $layer = GD::Image->new("$home/elements/$artist/$component");
     }
-    $white = $layer->colorClosest(255,255,255); # find white
-    $layer->transparent($white);
+    if ($layer->transparent == -1) {
+      $white = $layer->colorClosest(255,255,255); # find white
+      $layer->transparent($white);
+    }
     $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
   }
   return $image->png();
