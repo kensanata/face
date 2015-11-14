@@ -1,4 +1,4 @@
-Some of the images in this folder have been drawn by
+﻿Some of the images in this folder have been drawn by
 [Christian Sturke](http://rorschachhamster.wordpress.com/) and dedicated to the
 [public domain](LICENSE). Enjoy!
 
@@ -16,3 +16,5 @@ The other images are taken from the following books:
 * "Dissertation sur un traité de Charles Le Brun, concernant le
   rapport de la physionomie humaine avec celle des animaux" in einem
   PDF von der Université de Strassbourg
+
+* "Physiognomische Fragmente, zur Beförderung der Menschenkenntnis und Menschenliebe, von Johann Caspar Lavatar, Vierter Versuch" in einem PDF der Université de Strassbourg 
