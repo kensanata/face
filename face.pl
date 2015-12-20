@@ -308,26 +308,33 @@ sub random_components {
 
 sub render_components {
   my ($artist, @components) = @_;
-  my $image = GD::Image->new(450, 600);
-  my $white = $image->colorAllocate(255,255,255); # find white
-  $image->rectangle(0, 0, $image->getBounds(), $white);
+  my $image;
   for my $component (@components) {
     next unless $component;
     my $layer;
     if (-f "$home/elements/$component") {
-      $layer = GD::Image->new("$home/elements/$component");
+      $layer = GD::Image->newFromPng("$home/elements/$component", 1);
     } elsif (substr($component, -1) eq '_') {
       $component = substr($component, 0, -1);
-      $layer = GD::Image->new("$home/elements/$artist/$component");
+      $layer = GD::Image->newFromPng("$home/elements/$artist/$component", 1);
       $layer->flipHorizontal();
     } else {
-      $layer = GD::Image->new("$home/elements/$artist/$component");
+      $layer = GD::Image->newFromPng("$home/elements/$artist/$component", 1);
     }
-    if ($layer->transparent == -1) {
-      $white = $layer->colorClosest(255,255,255); # find white
+    # scanned images with a white background: make white transparent
+    warn "$component is " . $layer->isTrueColor . "\n";
+    if ($layer->isTrueColor == 0 and $layer->transparent == -1) {
+      my $white = $layer->colorClosest(255,255,255);
       $layer->transparent($white);
     }
-    $image->copyMerge($layer, 0, 0, 0, 0, $layer->getBounds(), 100);
+    # if we already have an image, combine them
+    if ($image) {
+      $image->copy($layer, 0, 0, 0, 0, $layer->getBounds());
+    } else {
+      $image = $layer;
+      $image->alphaBlending(1);
+      $image->saveAlpha(1);
+    }
   }
   return $image->png();
 }

@@ -9,15 +9,14 @@ if (not @ARGV) {
 
 for my $file (@ARGV) {
 
-  my $image = GD::Image->new($file);
+  my $image = GD::Image->newFromPng($file, 1);
 
   if (not $image) {
     warn "$file is not a valid PNG image\n";
     next;
   }
 
-  if ($image->transparent() != -1) {
-    warn "$file has a transparent color\n";
-    next;
-  }
+  warn "$file is true color\n" if $image->isTrueColor;
+
+  warn "$file has a transparent color\n" if $image->transparent() != -1;
 }
