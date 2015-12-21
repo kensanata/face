@@ -6,7 +6,7 @@
 
   <style>
     line, rect, circle, ellipse, path {
-    fill: white; stroke: #ddd; stroke-width: 0.02;
+    fill: white; stroke: #e5e5e5; stroke-width: 0.02;
     }
   </style>
 
