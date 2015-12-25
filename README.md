@@ -1,75 +1,133 @@
 # Random Faces
 
+The face generator is a web application that generates faces by
+combinging various elements such as eyes, nose, mouth and hair into a
+single picture.
+
+## How to Contribute
+
+The first thing I had to do was learning to draw faces. Check out
+[How to Draw a Face](http://www.wikihow.com/Draw-a-Face) or a similar
+resource.
+
+The main difficulty when it comes to contributing is that you need to
+provide the face elements – hair, eyes, nose, mouth – so that the
+software can layer them over one another. Thus, they need to be in
+more or less the same fixed positions.
+
+Do you work with pen and paper, or do you work electronically?
+
+I work with **pen and paper**. That's why I print out the
+[empty PDF](empty.pdf) and start drawing my face elements using a blue
+fountain pen. The empty.pdf file has basic face shapes that help me
+draw the eyes always in the right spot, the mouth always in the right
+spot, the beard always in the right spot, and so on. A good example of
+what this looks like can be found
+[on Flickr](https://www.flickr.com/photos/kensanata/21593038178/in/album-72157659474218980/).
+
+If this work for you, print a bunch of empty.pdf sheets and start
+drawing a row of noses, a row of mouths, a row of hair (or bald
+heads), a row of ears, a row of chins (maybe with beard), and so on.
+Scan what you draw and send me a mail (to
+[Alex Schroeder](mailto:kensanata@gmail.com)) as soon as possible.
+I'll set up a test account and we'll see how it goes, refining the
+process as we go.
+
+If you're like me, you'll agree that elves should have thinner faces
+and dwarves should have rounder faces. That's what the
+[elf PDF](elf.pdf) and the [dwarf PDF](dwarf.pdf) are for.
+
+If you work **electronically** using a tablet or so, I would suggest
+something else. I guess you will draw each element in a separate file.
+If so, here's how: open Gimp, Inkscape, Photoshop, Illustrator, Corel
+Draw, or whatever you prefer to use and load the
+[empty PDF](empty.pdf), create a new transparent layer on top of that
+and draw the eyes, hair, or beard in this second layer. Then, when
+you're done, delete the bottom layer and just
+[send it](mailto:kensanata@gmail.com).
+
+To get started, send me at bunch of noses, mouths, hair, ears, and
+chins. The minimum is one each, but more is better, of course. :)
+Again, I'll set up a test account and we'll see how it goes. I think
+getting feedback about the process is important. This will take a few
+attempts, I think.
+
+Later, we can use Dropbox or Google Drive to exchange files.
+
+## File Names
+
+It's important to get the file names right.
+
 This application goes through the files in the [elements](elements)
 folder for a given artist and picks out one of each for every
-*element* of a face.
+*element* of a face. These are the elements considered, in order:
 
+* face
 * eyes
-* nose
-* ears
 * mouth
 * chin
-* hair
+* ears
+* nose
 * extra (only 10% of all faces)
+* hair
+* hat
 
-We also want to allow filtering by *type*.
+The application also allows filtering by *type*.
 
 * woman
 * man
 * elf
 * dwarf
+* and whatever single word you can come up with...
 
-We're depending on a simple file name format:
-`element_type_stuff.png`, such as `ears_elf_2.png`. Each of these is a
-*component* of a particular face.
+The file format for all the images is very simple:
+`element_type_stuff.png`, e.g. `ears_elf_2.png`. Each of these files
+is a *component* of a particular face.
 
-If we're requesting an element of a particular type and no such
-element exists, we'll take any element with type "all". Thus, if we're
-going to request elf ears, we'll get `ears_elf_2.png`. If we request
-dwarf ears and there are no special dwarf ears, we might get
-`ears_all_1.png`.
+There is a special type called "all". It is used when no file matching
+the requested type is found.
 
-If we're don't determine a type, this is equivalent to asking for the
-"all" type. We might get `ears_all_1.png` but we won't get
-`ears_elf_2.png`.
+Assume we want to support men, women and elves. The ears of men and
+women are always the same. A typical filename for human ears might be
+`ears_all_1.png`. When generating a face for a man and looking at
+ears, no file matching `ears_man_*` is found and so a file matching
+`ears_all_*` is taken (namely the file `ears_all_1.png` we just
+mentioned). When generating a face for an elf, however, a file
+matching `ears_elf_*` is found (namely the file `ears_elf_2.png` we
+mentioned above) and thus the ears matching `ears_all_*` are never
+considered for elves.
 
-This results in a problem when adding a type when there was none. At
-first, we just had `hair_all_*.png`. Then we decided that here was a
-hairdo for a woman and created `hair_woman_3.png`. From now on, the
-"all" type will no longer be considered for women. You could use a
-symbolic link called `hair_woman_1.png` for `hair_all_1.png` or you
-could rename `hair_all_1.png` to hair_all_woman_1.png`.
+This results in a problem when adding a type when there was none
+before. At first, we just had `hair_all_*.png`. Then we decided that
+here was a hairdo for a woman and created `hair_woman_3.png`. From now
+on, the "all" type will no longer be used when generating a face for a
+woman. One solution is to rename `hair_all_1.png` to
+`hair_man_woman_1.png`. Now it will be used for both men and women but
+not for dwarves or elves.
 
-# Adding Elements
+## Nickname, Name, License
 
-Check out [How to Draw a Face](http://www.wikihow.com/Draw-a-Face) or
-a similar resource.
+All the files for each artist go into a directory with a short
+nickname, e.g. "alex". The artist's name and the link to their
+homepage is extracted from the `README.md` file in their directory.
+Take a look at [mine](elements/alex/README.md), for example.
 
-1. Print out a copy of the [empty PDF](empty.pdf) with those
-   egg-heads. Do not scale to fit! Use a scale of 100%. This PDF has
-   some helping guidelines to make sure all the elements are more or
-   less in the right place. The smaller horizontal lines are for the
-   tip of the nose and the bottom of the mouth. See the
-   [example](example.png).
+Currently, the code assumes that all artists have dedicated their
+files to the
+[public domain](https://creativecommons.org/publicdomain/zero/1.0/).
 
-2. Use a blue fountain pen to draw a row of eyes, a row of noses, a
-   row of mouths (maybe with mustaches), a row of hair (maybe with
-   hats), and a row of ears or chins (maybe with beards). Or just draw
-   sheet with just one element each. Fifty components (two sheets) per
-   element seems to be a good starting point. If you're happy with
-   dedicating your sheets to the
-   [public domain](https://creativecommons.org/publicdomain/zero/1.0/),
-   then you can send your sheets to
-   [Alex Schroeder](mailto:kensanata@gmail.com) right away. Alex will
-   do the rest.
+## Processing
 
-3. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
+If you're running your own copy of the face generator, here' the post
+processing you need to do with scanned images:
+
+1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
    The result must be an image 2250 pixels wide and 3000 pixels high.
    Rescale the image if necessary. Check out the examples
    [on Flickr](https://www.flickr.com/search/?user_id=80148151%40N00&sort=date-taken-desc&advanced=1&tags=rpg%20face%20generator&view_all=1).
 
-4. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
+2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
    tintenblau.png scan1.jpg source1.png` – this forces the image to
    use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
@@ -84,7 +142,7 @@ a similar resource.
    if you use RGB mode and no alpha channel—such elements will cover
    all previous elements.
 
-5. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
+3. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
    It cuts the scan into 5 × 5 images of 450 × 600 pixels each and
    labels them by row. You'd invoke it as follows: `perl
    helpers/cutter.pl source1.png alex eyes_all nose_all mouth_all
@@ -98,13 +156,13 @@ a similar resource.
    `_all` in the filename. That's how the system knows the face
    element can be used for all types of faces.
 
-6. If you think that some of your samples are specific to a particular
+4. If you think that some of your samples are specific to a particular
    phenotype, add the type to the filename. If you have a beard, for
    example, rename it from `chin_all_1.png` to `chin_man_1.png` or if
    you have ears that are fit for elves only, rename it from
    `ears_all_2.png` to `ears_elf_2.png`.
 
-# Dependencies
+## Dependencies
 
 The CGI script depends on [Mojolicious](http://mojolicio.us/) (perhaps
 this is too old: `sudo apt-get install libmojolicious-perl` – I used
@@ -114,7 +172,7 @@ libgd-gd2-perl`). The clean up instructions depend on
 [ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
 imagemagick`).
 
-# Installation
+## Installation
 
 You can simply install it as a CGI script on your web server.
 
@@ -183,7 +241,7 @@ an additional item to the config file:
 }
 ```
 
-# Finding and fixing misaligned elements: the easy way
+## Finding and fixing misaligned elements: the easy way
 
 If you're an artist and you're logged in, the main menu will have a
 new item: **Face Debugging**. Follow the link, pick an element type,
@@ -192,7 +250,7 @@ You're now on the Element Edit page. Click on the upper half of the
 image to move the element up by ten pixels, click on the lower half of
 the image to move the element down by ten pixels.
 
-# Finding and fixing elements: the hard way
+## Finding and fixing elements: the hard way
 
 I start the script using morbo and visit the gallery URLs with the
 debug parameter set to 1:
@@ -245,7 +303,7 @@ Example usage:
 perl helpers/top.pl elements/alex/eyes_all_*
 ```
 
-# Alternative look
+## Alternative look
 
 For [my images](elements/alex) I enforced a blue color map because I
 was doing my drawings using a blue fountain pen. This is the command
@@ -266,7 +324,7 @@ level. I'll suggest the following comand line: `convert -blur 0x1
 Now anything below 50% is black. I also converted it to grayscale at
 the end because the very light pixles seemed to have random colors.
 
-# Transparency and Opacity
+## Transparency and Opacity
 
 Sometimes you want white to be opaque. You would like to have hair
 that covers a face, or a hat that covers the face. One solution is to
