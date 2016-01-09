@@ -321,9 +321,9 @@ sub render_components {
     } else {
       $layer = GD::Image->newFromPng("$home/elements/$artist/$component", 1);
     }
-    # scanned images with a white background: make white transparent
-    warn "$component is " . $layer->isTrueColor . "\n";
-    if ($layer->isTrueColor == 0 and $layer->transparent == -1) {
+    # scanned images with a white background: make white transparent unless this
+    # is the first image
+    if ($layer->isTrueColor == 0 and $layer->transparent == -1 and $image) {
       my $white = $layer->colorClosest(255,255,255);
       $layer->transparent($white);
     }
