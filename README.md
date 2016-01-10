@@ -118,7 +118,7 @@ files to the
 
 ## Processing
 
-If you're running your own copy of the face generator, here' the post
+If you're running your own copy of the face generator, here's the post
 processing you need to do with scanned images:
 
 1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
