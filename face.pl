@@ -397,7 +397,7 @@ Debugging:
 <% } %>
 <p>
 Would you like to see your name on this list? Check out our
-<a href="https://github.com/kensanata/face#adding-elements">tutorial</a>.
+<a href="https://github.com/kensanata/face#how-to-contribute">tutorial</a>.
 
 @@ view.html.ep
 % layout 'default';
