@@ -378,6 +378,8 @@ __DATA__
 % layout 'default';
 % title 'Faces';
 <h1>Faces for your RPG Characters</h1>
+<p>This random face generator takes face elements drawn by an artist and
+uses them to create a new face.
 <p>Pick an artist:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
