@@ -104,7 +104,7 @@ get '/random/:artist/:type' => sub {
   my $type = $self->param('type');
   $self->render(format => 'png',
 		data => render_components(
-		  $artist,
+		  $self, $artist,
 		  random_components(
 		    $type, $artist)));
 } => 'random';
@@ -132,7 +132,7 @@ get '/render/:artist/#files' => sub {
   my $files = $self->param('files');
   $self->render(format => 'png',
 		data => render_components(
-		  $artist,
+		  $self, $artist,
 		  split(',', $files)));
 } => 'render';
 
@@ -307,7 +307,7 @@ sub random_components {
 }
 
 sub render_components {
-  my ($artist, @components) = @_;
+  my ($self, $artist, @components) = @_;
   my $image;
   for my $component (@components) {
     next unless $component;
@@ -335,6 +335,22 @@ sub render_components {
       $image->alphaBlending(1);
       $image->saveAlpha(1);
     }
+  }
+  my $height = $self->param('height');
+  my $width = $self->param('width');
+  if ($height and $image->height > $height) {
+    my $small = GD::Image->new($image->width * $height / $image->height, $height);
+    $small->copyResized($image, 0, 0, 0, 0,
+			$small->width, $small->height,
+			$image->width, $image->height);
+    $image = $small;
+  }
+  if ($width and $image->width > $width) {
+    my $small = GD::Image->new($width, $image->height * $width / $image->width);
+    $small->copyResized($image, 0, 0, 0, 0,
+			$small->width, $small->height,
+			$image->width, $image->height);
+    $image = $small;
   }
   return $image->png();
 }
