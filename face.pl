@@ -15,13 +15,9 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Mojolicious::Lite;
-use Mojo::Home;
 use GD;
 
-my $home = Mojo::Home->new;
-$home->detect;
-
-plugin 'Config' => {default => {users => {}}};
+plugin 'Config' => {default => {users => {}, home => '/home/alex/farm/face'}};
 
 plugin 'authentication', {
     autoload_user => 1,
@@ -203,6 +199,7 @@ any "/login" => sub {
       $self->stash(login => 'wrong');
     }
   }
+  $self->stash(home => app->config('home'));
 } => 'login';
 
 get "/logout" => sub {
@@ -227,6 +224,7 @@ my %artists;
 
 sub all_artists {
   return \%artists if %artists;
+  my $home = app->config('home');
   opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
   my @dirs = grep {
     !/\.png$/ # ignore images
@@ -262,6 +260,7 @@ sub all_artists {
 
 sub all_components {
   my ($artist, $element, $empty, $days) = @_;
+  my $home = app->config('home');
   $empty ||= 'empty.png';
   opendir(my $dh, "$home/elements/$artist")
       || die "Can't open $home/elements/$artist: $!";
@@ -290,6 +289,7 @@ sub random_components {
   my @elements = all_elements();
   @elements = grep(!/^extra/, @elements) if rand(1) >= 0.1; # 10% chance
   @elements = grep(!/^hat/, @elements) if rand(1) >= 0.1; # 10% chance
+  my $home = app->config('home');
   opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
@@ -309,6 +309,7 @@ sub random_components {
 sub render_components {
   my ($self, $artist, @components) = @_;
   my $image;
+  my $home = app->config('home');
   for my $component (@components) {
     next unless $component;
     my $layer;
@@ -357,6 +358,7 @@ sub render_components {
 
 sub move {
   my ($artist, $element, $dir, $step) = @_;
+  my $home = app->config('home');
   my $file = "$home/elements/$artist/$element";
   my $original = GD::Image->new($file);
   my $image = GD::Image->new(450, 600);
@@ -562,6 +564,8 @@ five pixels.
 %= password_field 'password'
 <p>
 %= submit_button 'Login'
+<hr>
+<p>Home: <%= $home %>
 % end
 
 @@ logout.html.ep
