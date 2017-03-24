@@ -38,13 +38,12 @@ and dwarves should have rounder faces. That's what the
 [elf PDF](elf.pdf) and the [dwarf PDF](dwarf.pdf) are for.
 
 If you work **electronically** using a tablet or so, I would suggest
-something else. I guess you will draw each element in a separate file.
-If so, here's how: open Gimp, Inkscape, Photoshop, Illustrator, Corel
-Draw, or whatever you prefer to use and load the
-[empty PDF](empty.pdf), create a new transparent layer on top of that
-and draw the eyes, hair, or beard in this second layer. Then, when
-you're done, delete the bottom layer and just
-[send it](mailto:kensanata@gmail.com).
+something else. Here's how I worked using my iPad and Procreate: I
+created a new image by importing the [empty PNG](empty.png) and adding
+a new layer for all the different elements: eyes, mouth, chin, ears,
+nose, extra, and hair. I exported the whole image in PSD format,
+keeping all the layers intact. If you got this far,
+just [send it](mailto:kensanata@gmail.com) to me.
 
 To get started, send me at bunch of noses, mouths, hair, ears, and
 chins. The minimum is one each, but more is better, of course. :)
@@ -161,6 +160,26 @@ processing you need to do with scanned images:
    example, rename it from `chin_all_1.png` to `chin_man_1.png` or if
    you have ears that are fit for elves only, rename it from
    `ears_all_2.png` to `ears_elf_2.png`.
+
+## PSD to Elements
+
+Up above I said I started with a layer per element. Faces-0.png is the
+visible layer, Faces-1.png is the white background, Faces-2.png is the
+empty PNG I used as a background, the rest are the useful layers. Each
+one consists of 5×5 tiles.
+
+I extract the elements from the various layers as follows:
+
+```
+convert Faces-[34].png -crop "5x5@" +repage eyes_all_%d.png
+convert Faces-5.png -crop "5x5@" +repage face_all_%d.png
+convert Faces-6.png -crop "5x5@" +repage nose_all_%d.png
+convert Faces-7.png -crop "5x5@" +repage mouth_all_%d.png
+convert Faces-[89].png -crop "5x5@" +repage ears_all_%d.png
+convert Faces-1[01].png -crop "5x5@" +repage chin_all_%d.png
+convert Faces-12.png -crop "5x5@" +repage hair_all_%d.png
+convert Faces-13.png -crop "5x5@" +repage extra_all_%d.png
+```
 
 ## Dependencies
 
