@@ -605,7 +605,7 @@ label { display: inline-block; width: 10ex }
 <p>
 All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
 <%= link_to 'Faces' => 'main' %> &nbsp;
-<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://github.com/kensanata/face">Source</a> &nbsp;
+<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://alexschroeder.ch/cgit/face-generator/about/">Source</a> &nbsp;
 <% if ($self->is_user_authenticated()) { %>
 <%= link_to 'Logout' => 'logout' %>
 <% } else { %>
