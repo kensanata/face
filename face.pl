@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (C) 2015 Alex Schroeder <alex@gnu.org>
+# Copyright (C) 2015-2018 Alex Schroeder <alex@gnu.org>
 
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -415,7 +415,7 @@ Debugging:
 <% } %>
 <p>
 Would you like to see your name on this list? Check out our
-<a href="https://github.com/kensanata/face#how-to-contribute">tutorial</a>.
+<a href="https://alexschroeder.ch/cgit/face-generator/about/#how-to-contribute">tutorial</a>.
 
 @@ view.html.ep
 % layout 'default';
@@ -605,7 +605,7 @@ label { display: inline-block; width: 10ex }
 <p>
 All the images generated are <a href="http://creativecommons.org/publicdomain/zero/1.0/">dedicated to the public domain</a>.<br>
 <%= link_to 'Faces' => 'main' %> &nbsp;
-<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://github.com/kensanata/face">Source on GitHub</a> &nbsp;
+<a href="https://alexschroeder.ch/wiki/Contact">Alex Schroeder</a> &nbsp; <a href="https://github.com/kensanata/face">Source</a> &nbsp;
 <% if ($self->is_user_authenticated()) { %>
 <%= link_to 'Logout' => 'logout' %>
 <% } else { %>
