@@ -123,8 +123,7 @@ processing you need to do with scanned images:
 1. Scan the image and crop it using [The Gimp](http://www.gimp.org/)
    or whatever else you feel comfortable with. Cropping is important.
    The result must be an image 2250 pixels wide and 3000 pixels high.
-   Rescale the image if necessary. Check out the examples
-   [on Flickr](https://www.flickr.com/search/?user_id=80148151%40N00&sort=date-taken-desc&advanced=1&tags=rpg%20face%20generator&view_all=1).
+   Rescale the image if necessary.
 
 2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap

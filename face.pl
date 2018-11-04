@@ -244,6 +244,9 @@ sub all_artists {
       $artists{$dir}{name} = $1;
       $artists{$dir}{url}  = $2;
     }
+    if ($text =~ /\*([^* ][^*]*)\*/) {
+      $artists{$dir}{title}  = $1;
+    }
     close($fh);
     # Find available types from the filenames.
     my %types;
@@ -401,7 +404,12 @@ uses them to create a new face.
 <p>Pick an artist:
 <ul>
 <% for my $artist (sort keys %$artists) { %>\
-<li><%= link_to url_for(view => {artist => $artist, type => $artists->{$artist}->{types}->[-1]}) => begin %><%= $artists->{$artist}{name} %><% end %>
+<li><%= link_to url_for(view => {artist => $artist, type => $artists->{$artist}->{types}->[-1]}) => begin %>\
+<%= $artists->{$artist}{name} %>\
+<% end %>\
+<% if ($artists->{$artist}{title}) { %>\
+ (<%= $artists->{$artist}{title} %>)\
+<% } %>\
 <% } %>\
 </ul>
 <% if ($self->is_user_authenticated()) { %>

@@ -17,4 +17,6 @@ The other images are taken from the following books:
   rapport de la physionomie humaine avec celle des animaux" in einem
   PDF von der Université de Strassbourg
 
-* "Physiognomische Fragmente, zur Beförderung der Menschenkenntnis und Menschenliebe, von Johann Caspar Lavatar, Vierter Versuch" in einem PDF der Université de Strassbourg 
+* "Physiognomische Fragmente, zur Beförderung der Menschenkenntnis und
+  Menschenliebe, von Johann Caspar Lavatar, Vierter Versuch" in einem
+  PDF der Université de Strassbourg
