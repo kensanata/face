@@ -21,9 +21,9 @@ I work with **pen and paper**. That's why I print out the
 [empty PDF](empty.pdf) and start drawing my face elements using a blue
 fountain pen. The empty.pdf file has basic face shapes that help me
 draw the eyes always in the right spot, the mouth always in the right
-spot, the beard always in the right spot, and so on. A good example of
-what this looks like can be found
-[on Flickr](https://www.flickr.com/photos/kensanata/21593038178/in/album-72157659474218980/).
+spot, the beard always in the right spot, and so on.
+
+![Example of a face on the template](example.png)
 
 If this work for you, print a bunch of empty.pdf sheets and start
 drawing a row of noses, a row of mouths, a row of hair (or bald
@@ -32,6 +32,8 @@ Scan what you draw and send me a mail (to
 [Alex Schroeder](mailto:kensanata@gmail.com)) as soon as possible.
 I'll set up a test account and we'll see how it goes, refining the
 process as we go.
+
+![Example of the manual process](manual-process.png)
 
 If you're like me, you'll agree that elves should have thinner faces
 and dwarves should have rounder faces. That's what the
@@ -44,6 +46,8 @@ a new layer for all the different elements: eyes, mouth, chin, ears,
 nose, extra, and hair. I exported the whole image in PSD format,
 keeping all the layers intact. If you got this far,
 just [send it](mailto:kensanata@gmail.com) to me.
+
+![Example PSD file](electronic-process.psd)
 
 To get started, send me at bunch of noses, mouths, hair, ears, and
 chins. The minimum is one each, but more is better, of course. :)
