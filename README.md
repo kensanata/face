@@ -52,7 +52,7 @@ just [send it](mailto:kensanata@gmail.com) to me.
 [Download PSD file](electronic-process.psd)
 
 To get started, send me at bunch of noses, mouths, hair, ears, and
-chins. The minimum is one each, but more is better, of course. :)
+chins. The minimum is one each, but more is better, of course. 😄
 Again, I'll set up a test account and we'll see how it goes. I think
 getting feedback about the process is important. This will take a few
 attempts, I think.
