@@ -47,7 +47,9 @@ nose, extra, and hair. I exported the whole image in PSD format,
 keeping all the layers intact. If you got this far,
 just [send it](mailto:kensanata@gmail.com) to me.
 
-![Example PSD file](electronic-process.psd)
+![Example of the electronic process](electronic-process.png)
+
+[Download PSD file](electronic-process.psd)
 
 To get started, send me at bunch of noses, mouths, hair, ears, and
 chins. The minimum is one each, but more is better, of course. :)
