@@ -57,7 +57,7 @@ Again, I'll set up a test account and we'll see how it goes. I think
 getting feedback about the process is important. This will take a few
 attempts, I think.
 
-Later, we can use Dropbox or Google Drive to exchange files.
+Later, we can use some other method to exchange files.
 
 ## File Names
 
