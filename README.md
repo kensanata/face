@@ -133,18 +133,18 @@ processing you need to do with scanned images:
 
 2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
-   tintenblau.png scan1.jpg source1.png` – this forces the image to
-   use the [Tintenblau](tintenblau.png) Palette (and loses the grid).
-   We're also moving from JPG (which is what your scanner probably
-   produced) to PNG. As for transparency: If your PNG files use
-   "indexed mode" or a *palette* then it will work if you have a
-   transparent color. If you don't (because you're converting a JPG to
-   a PNG as you did just now) then *white* is considered to be
-   *transparent* when merging the various elements. If your PNG files
-   use "RGB mode" or *true color*, then it will also work if you use
-   an alpha channel. Unfortunately, this means that it will *not* work
-   if you use RGB mode and no alpha channel—such elements will cover
-   all previous elements.
+   blau.png scan1.jpg source1.png` – this forces the image to use the
+   [blue](blau.png) Palette (and loses the grid). We're also moving
+   from JPG (which is what your scanner probably produced) to PNG. As
+   for transparency: If your PNG files use "indexed mode" or a
+   *palette* then it will work if you have a transparent color. If you
+   don't (because you're converting a JPG to a PNG as you did just
+   now) then *white* is considered to be *transparent* when merging
+   the various elements. If your PNG files use "RGB mode" or *true
+   color*, then it will also work if you use an alpha channel.
+   Unfortunately, this means that it will *not* work if you use RGB
+   mode and no alpha channel—such elements will cover all previous
+   elements.
 
 3. Cut the image into elements using [cutter.pl](helpers/cutter.pl).
    It cuts the scan into 5 × 5 images of 450 × 600 pixels each and
@@ -332,7 +332,7 @@ perl helpers/top.pl elements/alex/eyes_all_*
 For [my images](elements/alex) I enforced a blue color map because I
 was doing my drawings using a blue fountain pen. This is the command
 line I used in my example above: `convert -blur 0x1 +dither -remap
-tintenblau.png scan1.jpg source1.png`
+blau.png scan1.jpg source1.png`
 
 If you do your drawings using a pencil, you might want to keep the
 pencil look. I'll suggest the following command line: `convert -blur
