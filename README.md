@@ -175,7 +175,7 @@ one consists of 5×5 tiles.
 
 I extract the elements from the various layers as follows:
 
-```
+```sh
 convert Faces-[34].png -crop "5x5@" +repage eyes_all_%d.png
 convert Faces-5.png -crop "5x5@" +repage face_all_%d.png
 convert Faces-6.png -crop "5x5@" +repage nose_all_%d.png
@@ -212,7 +212,7 @@ for the cookie also depends on a secret, so you should also provide a
 
 Here's an example for the config file, `face.conf`:
 
-```
+```perl
 {
   secret => '*a random string*',
   users => {
@@ -230,7 +230,7 @@ with a section on deployment. The following is a quick summary.
 This runs the script as a server on
 [localhost:3000](http://localhost:3000/):
 
-```
+```sh
 perl face.pl daemon
 ```
 
@@ -238,13 +238,13 @@ This runs the script as a server on
 [localhost:3000](http://localhost:3000/) and reloads it every time you
 change it:
 
-```
+```sh
 morbo face.pl
 ```
 
 This runs the script as a server on port 8080, writing a pid file:
 
-```
+```sh
 hypnotoad face.pl
 ```
 
@@ -254,7 +254,7 @@ restarted. There's no need to kill it.
 You can configure `hypnotoad` to listen on a different port by adding
 an additional item to the config file:
 
-```
+```perl
 {
   hypnotoad => {listen => ['http://*:8082'],},
   secret => '*a random string*',
@@ -279,7 +279,7 @@ the image to move the element down by ten pixels.
 I start the script using morbo and visit the gallery URLs with the
 debug parameter set to 1:
 
-```
+```text
 http://localhost:3000/gallery/man?debug=1
 ```
 
@@ -287,7 +287,7 @@ Then I just reload until I find a face where things are misaligned. I
 right-click and pick "Show Graphic". This leads me to a link like the
 following:
 
-```
+```text
 http://localhost:3000/face/alex/empty_all.png,eyes_all_72.png,mouth_all_49.png,chin_man_30.png,ears_all_5.png,nose_all_20.png,hair_man_21.png
 ```
 
@@ -298,7 +298,7 @@ If you've found just a single misaligned element, you can change it in
 place by providing the same file name twice to
 [ImageMagick](http://www.imagemagick.org/):
 
-```
+```sh
 convert -page +0+10 -background white -flatten elements/alex/chin_man_30.png elements/alex/chin_man_30.png
 ```
 
@@ -307,7 +307,7 @@ shifted by some amount, you can use the shell to make your life
 easier. Here is what I used to shift some old eye elements down by 35
 pixels:
 
-```
+```sh
 for n in `seq 34`; do
   convert -page +0+35 -background white -flatten elements/alex/eyes_all_$n.png eyes_all_$n.png
 done
@@ -323,7 +323,7 @@ are at the top and at the bottom, respectively.
 
 Example usage:
 
-```
+```sh
 perl helpers/top.pl elements/alex/eyes_all_*
 ```
 
@@ -369,6 +369,17 @@ need it.
 
 Example usage:
 
-```
+```sh
 helpers/transparent.pl elements/rorschachhamster/*.png
+```
+
+## Darkness
+
+At one point I wanted to darken all the earlier elements I had drawn
+to make them more similar to the newer images I had drawn.
+
+```sh
+for f in $(ls *woman* *man* *all* *squid* *orc* *elf* *dwarf*|sort|uniq); do
+  convert -level 0,100%,0.6 -blur 0x1 +dither -remap ../../blau.png $f x.png && mv x.png $f
+done
 ```
