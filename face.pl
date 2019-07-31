@@ -305,7 +305,11 @@ sub random_components {
     my @candidates2 = grep(/_$type/, @candidates1);
     @candidates2 = grep(/_all/, @candidates1) unless @candidates2;
     my $candidate = one(@candidates2) || '';
-    $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
+    unless (app->config('no_flip')
+	    and app->config('no_flip')->{$artist}
+	    and grep { $type eq $_ } @{app->config('no_flip')->{$artist}}) {
+      $candidate .= '_' if $candidate and rand >= 0.5; # invert it!
+    }
     push(@components, $candidate) if $candidate;
   }
   unshift(@components, 'empty.png') if $debug;
