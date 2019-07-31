@@ -135,7 +135,9 @@ get '/render/:artist/#files' => sub {
 get '/debug' => sub {
   my $self = shift;
   $self->render(template => 'debug',
-		elements => [all_elements()]);
+		artist => '',
+		elements => [all_elements()],
+		types => []);
 } => 'debug';
 
 get '/debug/:artist' => sub {
@@ -143,7 +145,8 @@ get '/debug/:artist' => sub {
   my $artist = $self->param('artist');
   $self->render(template => 'debug',
 		artist => $artist,
-		elements => [all_elements()]);
+		elements => [all_elements()],
+		types => all_artists()->{$artist}->{types});
 } => 'debug_artist';
 
 get '/debug/:artist/#element' => sub {
@@ -496,6 +499,14 @@ Pick an element:
 <% for my $element (@$elements) {
    my $url  = $self->url_for(debug_element => { artist => $artist, element => $element }); %>
 <li><a href="<%= $url %>"><%= $element %></a></li>
+<% } %>
+</ul>
+<p>
+Or pick a type:
+<ul>
+<% for my $type (@$types) {
+   my $url  = $self->url_for(debug_element => { artist => $artist, element => $type }); %>
+<li><a href="<%= $url %>"><%= $type %></a></li>
 <% } %>
 </ul>
 
