@@ -265,6 +265,18 @@ an additional item to the config file:
 }
 ```
 
+## Prevent horizontal flipping
+
+Sometimes you'll have non-symmetrical faces, like profiles of dragons.
+In this case, you should note the type in the config file.
+
+```
+{
+  home => '/home/alex/src/face',
+  no_flip => { alex => ['dragon'] },
+}
+```
+
 ## Finding and fixing misaligned elements: the easy way
 
 If you're an artist and you're logged in, the main menu will have a
@@ -273,6 +285,9 @@ view the gallery, pick an element that is misaligned and klick it.
 You're now on the Element Edit page. Click on the upper half of the
 image to move the element up by ten pixels, click on the lower half of
 the image to move the element down by ten pixels.
+
+*Watch out*: This currently breaks if you're not using the standard
+450×600 dimensions (e.g. the dragons use 600×450 instead).
 
 ## Finding and fixing elements: the hard way
 
