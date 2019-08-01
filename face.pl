@@ -17,7 +17,16 @@
 use Mojolicious::Lite;
 use GD;
 
-plugin 'Config' => {default => {users => {}, home => '/home/alex/farm/face'}};
+plugin 'Config' => {
+  default => {
+    users => {},
+    empty => {},
+    level => 'warn',
+    home => '/home/alex/farm/face'}};
+
+# This log is to find bugs...
+app->log->level(app->config('level'));
+app->log->path(app->config('home') . "/face.log");
 
 plugin 'authentication', {
     autoload_user => 1,
@@ -153,7 +162,10 @@ get '/debug/:artist/#element' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $element = $self->param('element');
-  my $empty = $self->param('empty') || app->config('empty')->{$artist}->{$element};
+  my $empty = $self->param('empty');
+  if (not $empty and app->config('empty')->{$artist}) {
+    $empty = app->config('empty')->{$artist}->{$element};
+  }
   my $days = $self->param('days');
   $self->render(template => 'debugelement',
 		artist => $artist,
