@@ -1,6 +1,6 @@
 *~
 .DS_Store
-source*.png
+sources/
 face.conf
 hypnotoad.pid
 claudia
