@@ -272,12 +272,50 @@ an additional item to the config file:
 Sometimes you'll have non-symmetrical faces, like profiles of dragons.
 In this case, you should note the type in the config file.
 
-```
+```perl
 {
-  home => '/home/alex/src/face',
-  no_flip => { alex => ['dragon'] },
+  no_flip => { alex => ['dragon', 'demon'] },
 }
 ```
+
+## Appropriate background image when editing images
+
+When using the `/debug` URLs to edit images, you might not always want
+to use the default background image, [empty.png](elements/empty.png).
+
+You can specify the background image to use via the URL parameter
+`empty`. It must name an image in the `elements` directory. Example:
+
+* https://campaignwiki.org/face/debug/alex/eyes_dragon?empty=dragon.png
+
+There's a also a way to specify the background image via the config
+file. There, a given type is assigned a background image:
+
+```perl
+{
+  empty => {
+    tuiren => {
+      gnome => 'dwarf.png' },
+    alex => {
+      dragon => 'dragon.png',
+      elf => 'elf.png',
+      dwarf => 'dwarf.png',
+      gnome => 'dwarf.png',
+      demon => 'demon.png', }},
+  no_flip => { alex => ['dragon', 'demon'] },
+}
+```
+
+Sadly, this only works if the URL matches exactly. This works:
+
+* https://campaignwiki.org/face/debug/alex/dragon
+
+This doesn't work:
+
+* https://campaignwiki.org/face/debug/alex/eyes_dragon
+
+In the second case you need to specify the image to use via the
+`empty` parameter as shown above.
 
 ## Finding and fixing misaligned elements: the easy way
 
