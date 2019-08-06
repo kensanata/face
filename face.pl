@@ -15,6 +15,7 @@
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Mojolicious::Lite;
+use FindBin qw($Bin);
 use GD;
 
 plugin 'Config' => {
@@ -22,7 +23,7 @@ plugin 'Config' => {
     users => {},
     empty => {},
     level => 'warn',
-    home => '/home/alex/farm/face'}};
+    home => $Bin }};
 
 # This log is to find bugs...
 app->log->level(app->config('level'));
@@ -298,7 +299,7 @@ sub all_elements {
   # hair after ears
   # ears after chin (if you're fat)
   # chin after ears (for your beard) – damn!
-  return qw(face eyes mouth chin ears nose extra hair hat);
+  return qw(face eyes brows mouth chin ears nose extra horns hair hat);
 }
 
 sub random_components {

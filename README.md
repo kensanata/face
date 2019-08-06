@@ -69,13 +69,15 @@ folder for a given artist and picks out one of each for every
 
 * face
 * eyes
+* brows
 * mouth
 * chin
 * ears
 * nose
 * extra (only 10% of all faces)
+* horns
 * hair
-* hat
+* hat (only 10% of all faces)
 
 The application also allows filtering by *type*.
 
@@ -133,7 +135,7 @@ processing you need to do with scanned images:
 
 2. Clean up the image using [ImageMagick](http://www.imagemagick.org/)
    and the following command line: `convert -blur 0x1 +dither -remap
-   blau.png scan1.jpg source1.png` – this forces the image to use the
+   blau.png scan1.jpg source1.pngv` – this forces the image to use the
    [blue](blau.png) Palette (and loses the grid). We're also moving
    from JPG (which is what your scanner probably produced) to PNG. As
    for transparency: If your PNG files use "indexed mode" or a
