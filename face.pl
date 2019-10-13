@@ -119,6 +119,7 @@ get '/redirect/:artist/:type' => sub {
   my $self = shift;
   my $artist = $self->param('artist');
   my $type = $self->param('type');
+  srand($self->param('seed')) if $self->param('seed');
   $self->redirect_to(render => {
     artist => $artist,
     files  => join(',', random_components($type, $artist)), });
