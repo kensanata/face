@@ -7,8 +7,8 @@ my $file = shift;
 my $artist = shift;
 die "Usage: $0 scan.png artist type [types...]" unless $artist;
 my $image;
-$image = GD::Image->newFromPng($file) if $file =~ /\.png$/i;
-$image = GD::Image->newFromJpeg($file) if $file =~ /\.jpe?g$/i;
+$image = GD::Image->newFromPng($file, 1) if $file =~ /\.png$/i;
+$image = GD::Image->newFromJpeg($file, 1) if $file =~ /\.jpe?g$/i;
 die "Cannot read image from $file: $!" unless $image;
 
 # assuming 300dpi, looking at 1.5in x 2.0in images

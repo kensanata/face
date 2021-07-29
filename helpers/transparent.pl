@@ -7,16 +7,26 @@ if (not @ARGV) {
   die "Call this script with a bunch of PNG files\n";
 }
 
-for my $file (@ARGV) {
+ FILE:
+    for my $file (@ARGV) {
+      my $image = GD::Image->newFromPng($file,1);
 
-  my $image = GD::Image->newFromPng($file, 1);
+      if (not $image) {
+	warn "$file is not a valid PNG image\n";
+	next;
+      }
 
-  if (not $image) {
-    warn "$file is not a valid PNG image\n";
-    next;
-  }
-
-  warn "$file is true color\n" if $image->isTrueColor;
-
-  warn "$file has a transparent color\n" if $image->transparent() != -1;
+      my $limit = $image->height * $image->width;
+      my $color1;
+      for (my $y = 0; $y < $image->height - 1; $y++) {
+	for (my $x = 0; $x < $image->width -1; $x++) {
+	  my $index = $image->getPixel($x, $y);
+	  if (not defined $color1) {
+	    $color1 = $index;
+	  } elsif ($color1 != $index) {
+	    next FILE;
+	  }
+	}
+      }
+      print "$file\n";
 }
