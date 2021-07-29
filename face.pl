@@ -300,7 +300,7 @@ sub all_elements {
   # hair after ears
   # ears after chin (if you're fat)
   # chin after ears (for your beard) – damn!
-  return qw(face eyes brows mouth chin ears nose extra horns hair hat);
+  return qw(face eyes brows mouth chin ears nose extra horns bangs hair hat);
 }
 
 sub random_components {

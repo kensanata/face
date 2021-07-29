@@ -76,6 +76,7 @@ folder for a given artist and picks out one of each for every
 * nose
 * extra (only 10% of all faces)
 * horns
+* bangs
 * hair
 * hat (only 10% of all faces)
 
