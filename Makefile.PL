@@ -20,6 +20,7 @@ WriteMakefile(
     'Modern::Perl' => 1.20180701, # for '2018'
     'File::ShareDir' => 0,
     'Mojolicious' => 0,
+    'Mojolicious::Plugin::Authentication' => 0,
     'GD' => 0,
   },
   CONFIGURE_REQUIRES => {
