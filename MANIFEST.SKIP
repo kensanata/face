@@ -2,16 +2,17 @@
 \#$
 ~$
 \.bak$
+\.conf$
+\.tar\.gz$
 ^.git
 ^blib
-\.conf$
 ^MYMETA
 ^MANIFEST\.SKIP
 ^Makefile$
 ^pm_to_blib
 ^Dockerfile
 ^DOCKER
-\.tar\.gz$
+^RELEASE
 
 # bonus material
 ^helpers
