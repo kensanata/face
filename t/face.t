@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
+use Modern::Perl;
 use Test::More;
 use Test::Mojo;
 use FindBin;
@@ -21,21 +22,14 @@ use GD;
 use strict;
 use warnings;
 
-# Fix path for 'perl t/face.t'
-$ENV{MOJO_HOME} = "$FindBin::Bin/..";
-require "$FindBin::Bin/../face.pl";
-
-my $t = Test::Mojo->new;
+my $t = Test::Mojo->new('Game::FaceGenerator');
+$t->app->config->{contrib} = 'share';
 
 sub png_images_ok {
   my $images = shift;
-
   ok($images, "images provided by " . $t->tx->req->url);
-  
   for my $image (@$images) {
-    
     my $url = $image->attr('src');
-    
     $t->get_ok($url)
 	->status_is(200)
 	->header_is('Content-Type' => 'image/png');
@@ -99,7 +93,7 @@ $t->get_ok('/random/alex/woman')
  ARTIST:
     for my $artist (qw(alex)) {
       for my $type (qw(all man woman elf)) {
-	
+
 	$t->get_ok("/view/$artist/$type")
 	    ->status_is(200)
 	    ->text_is('h1' => "Random Face")
@@ -109,43 +103,38 @@ $t->get_ok('/random/alex/woman')
 	    ->element_exists("a[href='/random/$artist/$type']")
 	    # The image link itself
 	    ->element_exists("a img[src^='/render/$artist/']");
-	
+
 	my $url = $t->tx->res->dom->at('img')->attr('src');
-	
+
 	$t->get_ok($url)
 	    ->status_is(200)
 	    ->header_is('Content-Type' => 'image/png');
-	
+
 	$t->get_ok("/gallery/$artist/$type")
 	    ->status_is(200)
 	    ->text_is('h1' => "Face Gallery");
-	
+
 	png_images_ok($t->tx->res->dom->find('img'));
-	
-	if ($ENV{QUICK_TEST}) {
-	  diag "Skipping some tests because QUICK_TEST ist set";
-	  last ARTIST;
-	}
       }
 }
 
 $t->get_ok('/debug/alex')
     ->status_is(200);
 
-for my $element (all_elements()) {
+for my $element (Game::FaceGenerator::all_elements()) {
   $t->element_exists("li a[href='/debug/alex/$element']");
 }
 
-if ($ENV{QUICK_TEST}) {
-  diag "Skipping some tests because QUICK_TEST ist set";
-} else {
-  for my $element (all_elements()) {
-    
+if ($ENV{AUTHOR_TEST}) {
+  for my $element (Game::FaceGenerator::all_elements()) {
+
     $t->get_ok("/debug/alex/$element")
 	->status_is(200);
 
     png_images_ok($t->tx->res->dom->find('img'));
   }
+} else {
+  diag "Skipping some tests because AUTHOR_TEST is not set";
 }
 
 my $image = GD::Image->new(1, 30);
@@ -154,8 +143,8 @@ my $black = $image->colorAllocate(  0,  0,  0);
 $image->rectangle(0, 0, $image->getBounds(), $white);
 $image->setPixel(0, 20, $black);
 
-my $home = $ENV{MOJO_HOME}; # set at the top
-my $file = "$home/elements/alex/test_all.png";
+my $dir = $t->app->config('contrib');
+my $file = "$dir/alex/test_all.png";
 open(my $fh, '>:raw', $file);
 print $fh $image->png();
 close($fh);

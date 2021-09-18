@@ -1,0 +1,29 @@
+# developers
+\#$
+~$
+\.bak$
+^.git
+^blib
+\.conf$
+^MYMETA
+^MANIFEST\.SKIP
+^Makefile$
+^pm_to_blib
+
+# bonus material
+^helpers
+
+# while processing stuff
+^temp
+
+# only distribute share/alex
+^share/airi
+^share/alex2
+^share/arbust0
+^share/claudia
+^share/marionline
+^share/oldpics
+^share/rorschachhamster
+^share/yas
+^sources
+^sources/.*/unused

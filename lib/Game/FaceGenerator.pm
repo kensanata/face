@@ -14,20 +14,79 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
+=encoding utf8
+
+=head1 NAME
+
+Game::FaceGenerator - a web app to combina random images into faces
+
+=head1 DESCRIPTION
+
+Face Generator is a web application which uses random images to create faces.
+
+On a technical level, Face Generator is a web app based on the Mojolicious
+framework. This class in particular uses L<Mojolicious::Lite>.
+
+See L<Mojolicious::Guides> for more information.
+
+=cut
+
+package Game::FaceGenerator;
+
+our $VERSION = 1.00;
+
+use Modern::Perl;
 use Mojolicious::Lite;
-use FindBin qw($Bin);
+use File::ShareDir 'dist_dir';
+use Cwd;
 use GD;
+
+=head2 Configuration
+
+As a Mojolicious application, it will read a config file called
+F<face-generator.conf> in the same directory, if it exists. As the default log
+level is 'debug', one use of the config file is to change the log level using
+the C<loglevel> key, and if you're not running the server in a terminal, using
+the C<logfile> key to set a file.
+
+The random elements for faces are stored in the F<contrib> directory. You can
+change this directory using the C<contrib> key. By default, the directory
+included with the distribution is used. Thus, if you're a developer, you
+probably want to use something like the following to use the files from the
+source directory.
+
+    {
+      loglevel => 'debug',
+      logfile => undef,
+      contrib => 'share',
+    };
+
+=cut
 
 plugin 'Config' => {
   default => {
     users => {},
     empty => {},
-    level => 'warn',
-    home => $Bin }};
+    loglevel => 'debug',
+    logfile => undef,
+    contrib => dist_dir('Game-FaceGenerator'),
+  },
+  file => getcwd() . '/face-generator.conf',
+  empty => {
+    tuiren => {
+      gnome => 'dwarf.png' },
+    alex => {
+      dragon => 'dragon.png',
+      elf => 'elf.png',
+      dwarf => 'dwarf.png',
+      gnome => 'dwarf.png',
+      demon => 'demon.png', }},
+  no_flip => { alex => ['dragon', 'demon'] },
+};
 
 # This log is to find bugs...
-app->log->level(app->config('level'));
-app->log->path(app->config('home') . "/face.log");
+app->log->level(app->config('loglevel'));
+app->log->path(app->config('logfile'));
 
 plugin 'authentication', {
     autoload_user => 1,
@@ -241,52 +300,52 @@ my %artists;
 
 sub all_artists {
   return \%artists if %artists;
-  my $home = app->config('home');
-  opendir(my $dh, "$home/elements") || die "Can't open elements: $!";
+  my $dir = app->config('contrib');
+  opendir(my $dh, $dir) || die "Can't open $dir: $!";
   my @dirs = grep {
     !/\.png$/ # ignore images
 	&& substr($_, 0, 1) ne '.' # ignore "." and ".." and other "hidden files"
-	&& -d "$home/elements/$_"
-	&& -f "$home/elements/$_/README.md"
+	&& -d "$dir/$_"
+	&& -f "$dir/$_/README.md"
   } readdir($dh);
   closedir $dh;
-  for my $dir (@dirs) {
+  for my $artist (@dirs) {
     # Determine name and url from the README file.
-    $artists{$dir}{name} = $dir; # default
-    open(my $fh, '<:utf8', "$home/elements/$dir/README.md") or next;
+    $artists{$artist}{name} = $artist; # default
+    open(my $fh, '<:utf8', "$dir/$artist/README.md") or next;
     local $/ = undef;
     my $text = <$fh>;
     if ($text =~ /\[([^]]*)\]\((https?:.*)\)/) {
-      $artists{$dir} = {};
-      $artists{$dir}{name} = $1;
-      $artists{$dir}{url}  = $2;
+      $artists{$artist} = {};
+      $artists{$artist}{name} = $1;
+      $artists{$artist}{url}  = $2;
     }
     if ($text =~ /\*([^* ][^*]*)\*/) {
-      $artists{$dir}{title}  = $1;
+      $artists{$artist}{title}  = $1;
     }
     close($fh);
     # Find available types from the filenames.
     my %types;
-    opendir(my $dh, "$home/elements/$dir") || die "Can't open elements: $!";
+    opendir(my $dh, "$dir/$artist") || die "Can't open $dir/$artist: $!";
     while(readdir $dh) {
       $types{$1} = 1 if /_([a-z]+)/;
     }
     closedir $dh;
     delete $types{all} if $types{all} and keys %types > 1;
-    $artists{$dir}{types}  = [sort keys %types];
+    $artists{$artist}{types}  = [sort keys %types];
   }
   return \%artists;
 }
 
 sub all_components {
   my ($artist, $element, $empty, $days) = @_;
-  my $home = app->config('home');
+  my $dir = app->config('contrib');
   $empty ||= 'empty.png';
-  opendir(my $dh, "$home/elements/$artist")
-      || die "Can't open $home/elements/$artist: $!";
+  opendir(my $dh, "$dir/$artist")
+      || die "Can't open $dir/$artist: $!";
   my @files = grep { /$element.*\.png$/
 		     and (not $days
-			  or (stat("$home/elements/$artist/$_"))[9]
+			  or (stat("$dir/$artist/$_"))[9]
 			      >= (time - $days*24*60*60)) } readdir($dh);
   closedir $dh;
   my @components = map { [$empty, $_] } @files;
@@ -309,8 +368,8 @@ sub random_components {
   my @elements = all_elements();
   @elements = grep(!/^extra/, @elements) if rand(1) >= 0.1; # 10% chance
   @elements = grep(!/^hat/, @elements) if rand(1) >= 0.1; # 10% chance
-  my $home = app->config('home');
-  opendir(my $dh, "$home/elements/$artist") || die "Can't open elements: $!";
+  my $dir = app->config('contrib');
+  opendir(my $dh, "$dir/$artist") || die "Can't open $dir/$artist: $!";
   my @files = grep { /\.png$/ } readdir($dh);
   closedir $dh;
   my @components;
@@ -333,18 +392,18 @@ sub random_components {
 sub render_components {
   my ($self, $artist, @components) = @_;
   my $image;
-  my $home = app->config('home');
+  my $dir = app->config('contrib');
   for my $component (@components) {
     next unless $component;
     my $layer;
-    if (-f "$home/elements/$component") {
-      $layer = GD::Image->newFromPng("$home/elements/$component", 1);
+    if (-f "$dir/$component") {
+      $layer = GD::Image->newFromPng("$dir/$component", 1);
     } elsif (substr($component, -1) eq '_') {
       $component = substr($component, 0, -1);
-      $layer = GD::Image->newFromPng("$home/elements/$artist/$component", 1);
+      $layer = GD::Image->newFromPng("$dir/$artist/$component", 1);
       $layer->flipHorizontal();
     } else {
-      $layer = GD::Image->newFromPng("$home/elements/$artist/$component", 1);
+      $layer = GD::Image->newFromPng("$dir/$artist/$component", 1);
     }
     # scanned images with a white background: make white transparent unless this
     # is the first image
@@ -381,29 +440,29 @@ sub render_components {
 }
 
 sub move {
-  my ($artist, $element, $dir, $step) = @_;
-  my $home = app->config('home');
-  my $file = "$home/elements/$artist/$element";
+  my ($artist, $element, $direction, $step) = @_;
+  my $dir = app->config('contrib');
+  my $file = "$dir/$artist/$element";
   my $original = GD::Image->new($file);
   my $image = GD::Image->new(450, 600);
   my $white = $image->colorAllocate(255,255,255); # find white
   $image->rectangle(0, 0, $image->getBounds(), $white);
-  if ($dir eq 'up') {
+  if ($direction eq 'up') {
     $image->copy($original, 0, 0, 0, $step, $image->width, $image->height - $step);
-  } elsif ($dir eq 'down') {
+  } elsif ($direction eq 'down') {
     $image->copy($original, 0, $step, 0, 0, $image->width, $image->height - $step);
-  } elsif ($dir eq 'left') {
+  } elsif ($direction eq 'left') {
     $image->copy($original, 0, 0, $step, 0, $image->width - $step, $image->height);
-  } elsif ($dir eq 'right') {
+  } elsif ($direction eq 'right') {
     $image->copy($original, $step, 0, 0, 0, $image->width - $step, $image->height);
-  } elsif ($dir eq 'appart') {
+  } elsif ($direction eq 'appart') {
     $image->copy($original, $image->width/2 + $step/2, 0, $image->width/2, 0, $image->width/2 - $step/2, $image->height);
     $image->copy($original, 0, 0, $step/2, 0, $image->width/2 - $step/2, $image->height);
-  } elsif ($dir eq 'closer') {
+  } elsif ($direction eq 'closer') {
     $image->copy($original, $step/2, 0, 0, 0, $image->width/2 - $step/2, $image->height);
     $image->copy($original, $image->width/2, 0, $image->width/2 + $step/2, 0, $image->width/2 - $step/2, $image->height);
   } else {
-    die "Unknown direction: $dir\n";
+    die "Unknown direction: $direction\n";
   }
   open(my $fh, '>:raw', $file) or die "Cannot write $file: $!";
   print $fh $image->png();
