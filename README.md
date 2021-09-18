@@ -193,10 +193,9 @@ convert Faces-13.png -crop "5x5@" +repage extra_all_%d.png
 
 The CGI script depends on [Mojolicious](http://mojolicio.us/) (perhaps
 this is too old: `sudo apt-get install libmojolicious-perl` – I used
-`cpan Mojolicious` instead) and
-[GD](https://metacpan.org/pod/GD) (`sudo apt-get install
-libgd-gd2-perl`). The clean up instructions depend on
-[ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
+`cpan Mojolicious` instead) and [GD](https://metacpan.org/pod/GD)
+(`sudo apt-get install libgd-dev`). The clean up instructions depend
+on [ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
 imagemagick`).
 
 ## Installation

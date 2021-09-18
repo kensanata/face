@@ -18,6 +18,7 @@ WriteMakefile(
     'strict' => 0,
     'warnings' => 0,
     'Modern::Perl' => 1.20180701, # for '2018'
+    'File::ShareDir' => 0,
     'Mojolicious' => 0,
     'GD' => 0,
   },
