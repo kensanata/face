@@ -18,7 +18,7 @@
 
 =head1 NAME
 
-Game::FaceGenerator - a web app to combina random images into faces
+Game::FaceGenerator - a web app to combine random images into faces
 
 =head1 DESCRIPTION
 
