@@ -118,7 +118,7 @@ not for dwarves or elves.
 All the files for each artist go into a directory with a short
 nickname, e.g. "alex". The artist's name and the link to their
 homepage is extracted from the `README.md` file in their directory.
-Take a look at [mine](elements/alex/README.md), for example.
+Take a look at [mine](share/alex/README.md), for example.
 
 Currently, the code assumes that all artists have dedicated their
 files to the
@@ -281,7 +281,7 @@ In this case, you should note the type in the config file.
 ## Appropriate background image when editing images
 
 When using the `/debug` URLs to edit images, you might not always want
-to use the default background image, [empty.png](elements/empty.png).
+to use the default background image, [empty.png](share/empty.png).
 
 You can specify the background image to use via the URL parameter
 `empty`. It must name an image in the `elements` directory. Example:
@@ -354,7 +354,7 @@ place by providing the same file name twice to
 [ImageMagick](http://www.imagemagick.org/):
 
 ```sh
-convert -page +0+10 -background white -flatten elements/alex/chin_man_30.png elements/alex/chin_man_30.png
+convert -page +0+10 -background white -flatten share/alex/chin_man_30.png share/alex/chin_man_30.png
 ```
 
 If it turns out that you scanned a bunch of elements and they're all
@@ -364,7 +364,7 @@ pixels:
 
 ```sh
 for n in `seq 34`; do
-  convert -page +0+35 -background white -flatten elements/alex/eyes_all_$n.png eyes_all_$n.png
+  convert -page +0+35 -background white -flatten share/alex/eyes_all_$n.png eyes_all_$n.png
 done
 ```
 
@@ -379,12 +379,12 @@ are at the top and at the bottom, respectively.
 Example usage:
 
 ```sh
-perl helpers/top.pl elements/alex/eyes_all_*
+perl helpers/top.pl share/alex/eyes_all_*
 ```
 
 ## Alternative look
 
-For [my images](elements/alex) I enforced a blue color map because I
+For [my images](share/alex) I enforced a blue color map because I
 was doing my drawings using a blue fountain pen. This is the command
 line I used in my example above: `convert -blur 0x1 +dither -remap
 blau.png scan1.jpg source1.png`
@@ -425,7 +425,7 @@ need it.
 Example usage:
 
 ```sh
-helpers/transparent.pl elements/rorschachhamster/*.png
+helpers/transparent.pl share/rorschachhamster/*.png
 ```
 
 ## Darkness
