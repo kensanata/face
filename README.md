@@ -191,22 +191,22 @@ convert Faces-13.png -crop "5x5@" +repage extra_all_%d.png
 
 ## Dependencies
 
-The CGI script depends on [Mojolicious](http://mojolicio.us/) (perhaps
-this is too old: `sudo apt-get install libmojolicious-perl` – I used
-`cpan Mojolicious` instead) and [GD](https://metacpan.org/pod/GD)
-(`sudo apt-get install libgd-dev`). The clean up instructions depend
-on [ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
+The web application depends on [Mojolicious](http://mojolicio.us/)
+(`sudo apt-get install libmojolicious-perl`) and
+[GD](https://metacpan.org/pod/GD) (`sudo apt-get install libgd-dev`).
+
+The clean up instructions depend on
+[ImageMagick](http://www.imagemagick.org/) (`sudo apt-get install
 imagemagick`).
 
 ## Installation
 
-You can simply install it as a CGI script on your web server.
-
 If you want to edit images using the script ("Face Debugging"), you'll
 need to add accounts to the config file. You'll have to create this
-file. The file must be called `face.conf` and it must reside in the
-same directory as `face.pl`, providing **usernames** and
-**passwords**. Every artist can have an account.
+file. The file must be called `face-generator.conf` and it must reside
+in the current working directory where you run `face-generator`. It
+must providing **usernames** and **passwords**. Every artist can have
+an account.
 
 Session information is stored in an encrypted cookie. The encryption
 for the cookie also depends on a secret, so you should also provide a
@@ -224,8 +224,9 @@ Here's an example for the config file, `face.conf`:
 }
 ```
 
-As the [script](face.pl) is a [Mojolicious](http://mojolicio.us/) app,
-there are many other ways to deploy it. There is a
+As the web application is built using
+[Mojolicious](http://mojolicio.us/), there are many other ways to
+deploy it. There is a
 [Cookbook](http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT)
 with a section on deployment. The following is a quick summary.
 
@@ -233,21 +234,21 @@ This runs the script as a server on
 [localhost:3000](http://localhost:3000/):
 
 ```sh
-perl face.pl daemon
+face-generator daemon
 ```
 
 This runs the script as a server on
 [localhost:3000](http://localhost:3000/) and reloads it every time you
-change it:
+change one of the files:
 
 ```sh
-morbo face.pl
+morbo script/face-generator
 ```
 
 This runs the script as a server on port 8080, writing a pid file:
 
 ```sh
-hypnotoad face.pl
+hypnotoad script/face-generator
 ```
 
 Whenever you repeat this `hypnotoad` command, the server will be
@@ -284,7 +285,7 @@ When using the `/debug` URLs to edit images, you might not always want
 to use the default background image, [empty.png](share/empty.png).
 
 You can specify the background image to use via the URL parameter
-`empty`. It must name an image in the `elements` directory. Example:
+`empty`. It must name an image in the `share` directory. Example:
 
 * https://campaignwiki.org/face/debug/alex/eyes_dragon?empty=dragon.png
 
