@@ -41,6 +41,9 @@ use File::ShareDir 'dist_dir';
 use Cwd;
 use GD;
 
+# Commands for the command line!
+push @{app->commands->namespaces}, 'Game::FaceGenerator::Command';
+
 =head1 CONFIGURATION
 
 As a Mojolicious application, it will read a config file called
@@ -262,10 +265,7 @@ get '/random/:artist/:type' => sub {
   my $artist = $self->param('artist');
   my $type = $self->param('type');
   $self->render(format => 'png',
-		data => render_components(
-		  $self, $artist,
-		  random_components(
-		    $type, $artist)));
+		data => render_components($artist, random_components($type, $artist)));
 } => 'random';
 
 get '/redirect/:artist/:type' => sub {
@@ -291,9 +291,7 @@ get '/render/:artist/#files' => sub {
   my $artist = $self->param('artist');
   my $files = $self->param('files');
   $self->render(format => 'png',
-		data => render_components(
-		  $self, $artist,
-		  split(',', $files)));
+		data => render_components($artist, split(',', $files)));
 } => 'render';
 
 get '/debug' => sub {
@@ -488,6 +486,7 @@ sub all_elements {
 
 sub random_components {
   my ($type, $artist, $debug) = @_;
+  %artists = %{all_artists()} unless keys %artists;
   $type = one(@{$artists{$artist}->{types}}) if $type eq 'random';
   my @elements = all_elements();
   @elements = grep(!/^extra/, @elements) if rand(1) >= 0.1; # 10% chance
@@ -514,7 +513,7 @@ sub random_components {
 }
 
 sub render_components {
-  my ($self, $artist, @components) = @_;
+  my ($artist, @components) = @_;
   my $image;
   my $dir = app->config('contrib');
   for my $component (@components) {
@@ -543,22 +542,6 @@ sub render_components {
       $image->alphaBlending(1);
       $image->saveAlpha(1);
     }
-  }
-  my $height = $self->param('height');
-  my $width = $self->param('width');
-  if ($height and $image->height > $height) {
-    my $small = GD::Image->new($image->width * $height / $image->height, $height);
-    $small->copyResized($image, 0, 0, 0, 0,
-			$small->width, $small->height,
-			$image->width, $image->height);
-    $image = $small;
-  }
-  if ($width and $image->width > $width) {
-    my $small = GD::Image->new($width, $image->height * $width / $image->width);
-    $small->copyResized($image, 0, 0, 0, 0,
-			$small->width, $small->height,
-			$image->width, $image->height);
-    $image = $small;
   }
   return $image->png();
 }
