@@ -41,13 +41,13 @@ use File::ShareDir 'dist_dir';
 use Cwd;
 use GD;
 
-=head2 Configuration
+=head1 CONFIGURATION
 
 As a Mojolicious application, it will read a config file called
-F<face-generator.conf> in the same directory, if it exists. As the default log
-level is 'debug', one use of the config file is to change the log level using
-the C<loglevel> key, and if you're not running the server in a terminal, using
-the C<logfile> key to set a file.
+F<face-generator.conf> in the current directory, if it exists. As the default
+log level is 'debug', one use of the config file is to change the log level
+using the C<loglevel> key, and if you're not running the server in a terminal,
+using the C<logfile> key to set a file.
 
 The random elements for faces are stored in the F<contrib> directory. You can
 change this directory using the C<contrib> key. By default, the directory
@@ -60,6 +60,100 @@ source directory.
       logfile => undef,
       contrib => 'share',
     };
+
+If you run Face Generator and you have artists contributing face elements, you
+might be interested in granting them access to a simple image editing interface.
+There, they shift elements up, down, left and right, and so on. In order to
+allow this, you can add users to the config file.
+
+If you run the application in production, you should change the c<secret>. This
+is used to protect cookies from tampering. The cookie is where people with a
+user account store their username and password, so changing the secret is an
+additional protection.
+
+Here's an example of how to set up C<secret> and C<users>:
+
+    {
+      secret => '*a random string*',
+      users => {
+	'alex' => '*secret*',
+	'berta' => '*secret*',
+      },
+    }
+
+When these users edit images online, Face Generator adds a background image to
+makes it easier for artists to decide where elements need to be placed exactly
+in relation to everything else. The default background image is F<empty.png>.
+
+You can specify the background image to use via the URL parameter C<empty>. It
+must name an image in the F<contrib> directory.
+
+Example:
+
+    https://campaignwiki.org/face/debug/alex/eyes_dragon?empty=dragon.png
+
+You can specify the background image via the config file, too. There, a given
+type is assigned a background image:
+
+    {
+      secret => '*a random string*',
+      users => {
+	'alex' => '*secret*',
+	'tuiren' => '*secret*',
+      },
+      empty => {
+	tuiren => {
+	  gnome => 'dwarf.png',
+        },
+	alex => {
+	  dragon => 'dragon.png',
+	  elf => 'elf.png',
+	  dwarf => 'dwarf.png',
+	  gnome => 'dwarf.png',
+	  demon => 'demon.png',
+        },
+      },
+    }
+
+As you can see, in a few cases the artists are using a different background
+image.
+
+Usually, Face Generator uses all the image elements provided both as-is and
+flipped horizontally. Sometimes, that doesn't work. The C<dragon> and C<demon>
+images, for example, face sideways. You can't just flip elements for these
+images. Flipping can be prevented using the C<no_flip> key in the config file.
+
+    {
+      secret => '*a random string*',
+      users => {
+	'alex' => '*secret*',
+	'tuiren' => '*secret*',
+      },
+      empty => {
+	alex => {
+	  dragon => 'dragon.png',
+	  elf => 'elf.png',
+	  dwarf => 'dwarf.png',
+	  gnome => 'dwarf.png',
+	  demon => 'demon.png',
+        },
+	tuiren => {
+	  gnome => 'dwarf.png',
+        },
+      },
+      no_flip => {
+        alex => [
+          'dragon',
+          'demon'
+        ],
+      },
+    }
+
+For both the C<empty> and C<no_flip> key, the value is again a hash reference
+with the keys being the users specified for the C<users> key. In the examples
+above, C<alex> and C<tuiren> are users, and both use a different background
+image for some of their image elements, and one of them has image elements that
+cannot be flipped.
 
 =cut
 
@@ -296,6 +390,25 @@ sub one {
   return $_[$i];
 }
 
+=head1 ARTISTS
+
+The F<contrib> directory contains background images like F<empty.png> (default
+human), F<elf.png> (narrower), F<dwarf.png> (rounder), F<demon.png> (looking
+half left, with horns), F<dragon.png> (looking left), and the artist
+directories.
+
+Each artist directory must contain a F<README.md> file. The first Markdown link
+of the form C<[name](URL)> is used to name the artist and link to their presence
+on the web. The first Markdown emphasized text of the form C<*title*> is used as
+the title for the collection. This can be useful if an artist has two different
+collections. Take Alex Schroeder, who started out as “alex”. Then a second
+collection is added, and called “alex2”. It’s still the same person, so the two
+F<README.md> files both contain the link C<[Alex
+Schroeder](https://alexschroeder.ch/)>, and the first one contains the title
+C<*Blau*> and the second one contains the title C<*Tablet*>.
+
+=cut
+
 my %artists;
 
 sub all_artists {
@@ -351,6 +464,17 @@ sub all_components {
   my @components = map { [$empty, $_] } @files;
   return @components;
 }
+
+=head1 ELEMENTS
+
+The elements are drawn in a default order over one another: C<face> C<eyes>
+C<brows> C<mouth> C<chin> C<ears> C<nose> C<extra> C<horns> C<bangs> C<hair>
+C<hat>.
+
+Thus, a mustache (as part of the C<chin>) covers a mouth; C<hair> covers the
+face; C<hat> cover C<hair>, and so on.
+
+=cut
 
 sub all_elements {
   # face is the background, if any (mostly to support photos)
