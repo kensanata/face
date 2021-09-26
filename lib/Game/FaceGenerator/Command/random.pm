@@ -43,7 +43,7 @@ package Game::FaceGenerator::Command::random;
 use Modern::Perl;
 use Mojo::Base 'Mojolicious::Command';
 use Pod::Simple::Text;
-use Game::FaceGenerator;
+use Game::FaceGenerator::Core qw(random_components render_components);
 
 has description => 'Print a random face to STDOUT';
 
@@ -60,12 +60,12 @@ sub run {
     $parser->parse_lines(<DATA>);
     return 1;
   }
-  my @components = Game::FaceGenerator::random_components($type, $artist);
+  my @components = random_components($type, $artist);
   if (-t STDOUT) {
     say "@components";
     say "To generate an image, redirect stdout to a file."
   } else {
-    print Game::FaceGenerator::render_components($artist, @components);
+    print render_components($artist, @components);
   }
 }
 
