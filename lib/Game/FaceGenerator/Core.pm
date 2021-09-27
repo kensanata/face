@@ -63,7 +63,7 @@ sub no_flip {
   my $arg = shift;
   if (ref $arg) {
     $no_flip = $arg;
-   } elsif ($no_flip->{$arg}) {
+   } elsif ($arg and $no_flip->{$arg}) {
     @{$no_flip->{$arg}};
   } else {
     ();
