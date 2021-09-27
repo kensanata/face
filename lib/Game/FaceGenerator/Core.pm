@@ -34,7 +34,8 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(dir no_flip all_artists random_components all_components all_elements render_components move);
 
 use Modern::Perl;
-use File::ShareDir 'dist_dir';
+use File::ShareDir qw(dist_dir);
+use File::Slurper qw(read_dir read_text read_binary write_binary);
 use List::Util 'any';
 use Cwd;
 use GD;
@@ -102,20 +103,15 @@ entire F<contrib> directory, so the result is cached.
 
 sub all_artists {
   return \%artists if %artists;
-  opendir(my $dh, $dir) || die "Can't open $dir: $!";
   my @dirs = grep {
     !/\.png$/ # ignore images
-	&& substr($_, 0, 1) ne '.' # ignore "." and ".." and other "hidden files"
 	&& -d "$dir/$_"
 	&& -f "$dir/$_/README.md"
-  } readdir($dh);
-  closedir $dh;
+  } read_dir($dir);
   for my $artist (@dirs) {
     # Determine name and url from the README file.
     $artists{$artist}{name} = $artist; # default
-    open(my $fh, '<:utf8', "$dir/$artist/README.md") or next;
-    local $/ = undef;
-    my $text = <$fh>;
+    my $text = read_text("$dir/$artist/README.md");
     if ($text =~ /\[([^]]*)\]\((https?:.*)\)/) {
       $artists{$artist} = {};
       $artists{$artist}{name} = $1;
@@ -124,14 +120,11 @@ sub all_artists {
     if ($text =~ /\*([^* ][^*]*)\*/) {
       $artists{$artist}{title}  = $1;
     }
-    close($fh);
     # Find available types from the filenames.
     my %types;
-    opendir(my $dh, "$dir/$artist") || die "Can't open $dir/$artist: $!";
-    while(readdir $dh) {
+    for (read_dir("$dir/$artist")) {
       $types{$1} = 1 if /_([a-z]+)/;
     }
-    closedir $dh;
     delete $types{all} if $types{all} and keys %types > 1;
     $artists{$artist}{types}  = [sort keys %types];
   }
@@ -142,20 +135,18 @@ sub all_artists {
 
 Returns all the elements for an C<$artist>, optionally with prefix c<$element>,
 followed by the C<$empty> image (defaulting to F<empty.png>), and possibly
-filtered by last modification time in C<$days>.
+filtered by last modification time in C<$days>. Each element is an array of
+C<$empty> and the actual file name.
 
 =cut
 
 sub all_components {
   my ($artist, $element, $empty, $days) = @_;
   $empty ||= 'empty.png';
-  opendir(my $dh, "$dir/$artist")
-      || die "Can't open $dir/$artist: $!";
-  my @files = grep { /$element.*\.png$/
-		     and (not $days
-			  or (stat("$dir/$artist/$_"))[9]
-			      >= (time - $days*24*60*60)) } readdir($dh);
-  closedir $dh;
+  my @files = grep {
+    /$element.*\.png$/
+	and (not $days or (stat("$dir/$artist/$_"))[9] >= (time - $days*24*60*60))
+  } read_dir("$dir/$artist");
   my @components = map { [$empty, $_] } @files;
   return @components;
 }
@@ -195,9 +186,7 @@ sub random_components {
   my @elements = all_elements();
   @elements = grep(!/^extra/, @elements) if rand(1) >= 0.1; # 10% chance
   @elements = grep(!/^hat/, @elements) if rand(1) >= 0.1; # 10% chance
-  opendir(my $dh, "$dir/$artist") || die "Can't open $dir/$artist: $!";
-  my @files = grep { /\.png$/ } readdir($dh);
-  closedir $dh;
+  my @files = grep { /\.png$/ } read_dir("$dir/$artist");
   my @components;
   for my $element (@elements) {
     my @candidates1 = grep(/^${element}_/, @files);
@@ -283,9 +272,7 @@ sub move {
   } else {
     die "Unknown direction: $direction\n";
   }
-  open(my $fh, '>:raw', $file) or die "Cannot write $file: $!";
-  print $fh $image->png();
-  close($fh);
+  write_binary($file, $image->png);
 }
 
 1;
