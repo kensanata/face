@@ -15,7 +15,7 @@
 
 =head1 NAME
 
-Game::FaceGenerator::Command::random
+Game::FaceGenerator::Command::random - random subcommand for the command-line
 
 =head1 SYNOPSIS
 
