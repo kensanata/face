@@ -27,15 +27,15 @@ Prepare an upload by using n.nn_nn for a developer release:
 ```
 perl Makefile.PL
 make distdir
-mv Game-FaceGenerator-1.01 Game-FaceGenerator-1.01_01
-tar czf Game-FaceGenerator-1.01_01.tar.gz Game-FaceGenerator-1.01_01
-trash Game-FaceGenerator-1.01_01
-cpan-upload -u SCHROEDER Game-FaceGenerator-1.01_01.tar.gz
+mv Game-FaceGenerator-1.01 Game-FaceGenerator-1.01_02
+tar czf Game-FaceGenerator-1.01_02.tar.gz Game-FaceGenerator-1.01_02
+trash Game-FaceGenerator-1.01_02
+cpan-upload -u SCHROEDER Game-FaceGenerator-1.01_02.tar.gz
 ```
 
 If you’re happy with the results:
 
 ```
 perl Makefile.PL && make && make dist
-cpan-upload -u SCHROEDER Game-FaceGenerator-1.02.tar.gz
+cpan-upload -u SCHROEDER Game-FaceGenerator-1.01.tar.gz
 ```
