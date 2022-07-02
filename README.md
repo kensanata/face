@@ -171,10 +171,17 @@ processing you need to do with scanned images:
 
 ## PSD to Elements
 
-Up above I said I started with a layer per element. Faces-0.png is the
-visible layer, Faces-1.png is the white background, Faces-2.png is the
-empty PNG I used as a background, the rest are the useful layers. Each
-one consists of 5×5 tiles.
+Up above I said I started with a layer per element. Extract all the
+layers to separate files:
+
+```sh
+convert Faces.psd Faces.png
+```
+
+This generates a PNG fileper layer. Faces-0.png is the visible layer,
+Faces-1.png is the white background, Faces-2.png is the empty PNG I
+used as a background, the rest are the useful layers. Each one
+consists of 5×5 tiles.
 
 I extract the elements from the various layers as follows:
 
