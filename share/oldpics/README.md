@@ -1,5 +1,5 @@
 These
-[Old Pictures](https://github.com/kensanata/face/tree/master/elements/oldpics#readme)
+[Old Pictures](https://alexschroeder.ch/cgit/face-generator/tree/share/oldpics/README.md)
 have been extracted from public domain sources by
 [Alex Schroeder](https://alexschroeder.ch/) and dedicated to the
 [public domain](LICENSE). Enjoy!
