@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
-use strict;
-use warnings;
+use Modern::Perl;
+use File::Slurper qw(write_binary);
 use GD;
 
 my $file = shift;
@@ -24,12 +24,8 @@ sub process {
       my $element = new GD::Image(450,600);
       $element->copy($image, 0, 0, 450 * $x, 600 * $y, 450, 600);
       my $c = 1;
-      $c++ while -f "elements/$artist/${type}_$c.png";
-      open (my $fh, '>', "elements/$artist/${type}_$c.png")
-	  or die "Cannot write elements/$artist/${type}_$c.png: $!";
-      binmode $fh;
-      print $fh $element->png;
-      close $fh;
+      $c++ while -f "share/$artist/${type}_$c.png";
+      write_binary("share/$artist/${type}_$c.png", $element->png);
     }
   }
 }
