@@ -6,5 +6,4 @@ sources/
 temp/
 blib/
 MYMETA*
-MANIFEST
 *.tar.gz
