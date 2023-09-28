@@ -29,7 +29,7 @@ If this work for you, print a bunch of empty.pdf sheets and start
 drawing a row of noses, a row of mouths, a row of hair (or bald
 heads), a row of ears, a row of chins (maybe with beard), and so on.
 Scan what you draw and send me a mail (to
-[Alex Schroeder](mailto:kensanata@gmail.com)) as soon as possible.
+[Alex Schroeder](mailto:alex@alexschroeder.ch)) as soon as possible.
 I'll set up a test account and we'll see how it goes, refining the
 process as we go.
 
@@ -45,7 +45,7 @@ created a new image by importing the [empty PNG](empty.png) and adding
 a new layer for all the different elements: eyes, mouth, chin, ears,
 nose, extra, and hair. I exported the whole image in PSD format,
 keeping all the layers intact. If you got this far,
-just [send it](mailto:kensanata@gmail.com) to me.
+just [send it](mailto:alex@alexschroeder.ch) to me.
 
 ![Example of the electronic process](electronic-process.png)
 
