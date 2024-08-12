@@ -50,6 +50,9 @@ sub postamble {
   my $self = shift;
   my @ret = File::ShareDir::Install::postamble($self);
   push @ret, <<'EOT';
+upload:
+	rsync --archive --itemize-changes empty.pdf example.png manual-process.png elf.pdf dwarf.pdf empty.png sibirocobombus:campaignwiki.org/contrib/
+
 check:
 	find lib -name '*.pm' -exec perl -Ilib -c '{}' ';' -exec podchecker '{}' ';'
 
