@@ -432,7 +432,7 @@ Would you like to see your name on this list? Check out our
 Or take a look at the <%= link_to url_for(gallery => {artist => $artist, type => $type}) => begin %>Gallery<% end %>.
 <% if (@{$artists->{$artist}->{types}} > 1) { =%>
 <br>Or switch type:
-<% for my $t (@{$artists->{$artist}->{types}}) {
+<% for my $t (@{$artists->{$artist}->{types}}, 'random') {
      $self->stash('t', $t);
      if ($type eq $t) { %>\
 <b><%= $t %></b>
